@@ -21,9 +21,10 @@ TSPacket TSParser::parseTSPacket(const uint8_t* packet, int packet_size, int ind
     }
 
     TSPacket ts_packet;
-    ts_packet.header.bf.transport_error_indicator = packet[1] & 0x80;
-    ts_packet.header.bf.payload_unit_start_indicator = packet[1] & 0x40;
-    ts_packet.header.bf.transport_priority = packet[1] & 0x20;
+    ts_packet.header.bf.sync_byte = packet[0];
+    ts_packet.header.bf.transport_error_indicator    = (packet[1] & 0x80) >> 7;
+    ts_packet.header.bf.payload_unit_start_indicator = (packet[1] & 0x40) >> 6;
+    ts_packet.header.bf.transport_priority           = (packet[1] & 0x20) >> 5;
     ts_packet.header.bf.pid = ((packet[1] & 0x1F) << 8) | packet[2];
     ts_packet.header.bf.transport_scrambling_control = (packet[3] & 0xC0) >> 6;
 
@@ -59,6 +60,9 @@ TSPacket TSParser::parseTSPacket(const uint8_t* packet, int packet_size, int ind
         default:
             break;
     }
+
+    if (ts_packet.header.bf.pid == 0x04b1)
+        ts_packet.print();
 
     return ts_packet;
 }
