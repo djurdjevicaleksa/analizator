@@ -81,9 +81,9 @@ std::vector<TSPacket> parse(const char* ts_file) {
         std::cerr << "Failed to open TS file.\n";
         exit(1);
     }
-
+    
     while (tsFile.read(reinterpret_cast<char*>(packet), packet_size)) {
-        ts_packets.push_back(std::move(parseTSPacket(packet, packet_size, packetCount++)));
+        ts_packets.push_back(std::move(parseTSPacket(packet, packetCount++)));
     }
 
     tsFile.close();
