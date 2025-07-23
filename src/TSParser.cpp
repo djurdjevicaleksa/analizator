@@ -61,9 +61,6 @@ TSPacket TSParser::parseTSPacket(const uint8_t* packet, int packet_size, int ind
             break;
     }
 
-    if (ts_packet.header.bf.pid == 0x04b1)
-        ts_packet.print();
-
     return ts_packet;
 }
 
