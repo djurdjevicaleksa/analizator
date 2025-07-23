@@ -6,6 +6,8 @@
 
 #include "TSPacket.h"
 
+#define NIT_PID 0x0010 
+
 struct NetworkInformationSection {
     struct PacketHeader {
         uint8_t table_id;
