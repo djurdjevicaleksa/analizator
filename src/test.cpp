@@ -1,5 +1,6 @@
 #include "TSParser.h"
 #include "NITParser.h"
+#include "SDTParser.h"
 
 int main(int argc, char** argv) {
     TSParser ts_parser;
@@ -7,10 +8,23 @@ int main(int argc, char** argv) {
     std::vector<TSPacket> ts_packets = ts_parser.parseTransportStream(argv[1]);
     std::unordered_map<uint16_t, std::vector<TSPacket>> grouped_packets = ts_parser.groupPacketsByPID(ts_packets);
 
-    // ts_parser.printGroupedPackets(grouped_packets);
+    ts_parser.printGroupedPackets(grouped_packets);
 
-    std::vector<NetworkInformationSection> nit_tables = NIT::parse(grouped_packets.at(0x0010));
-    nit_tables[0].print();
+    try {
+        std::vector<NetworkInformationSection> nit_tables = NIT::parse(grouped_packets.at(NIT_PID));
+        nit_tables[0].print();
+    }
+    catch (std::out_of_range& e) {
+        std::cerr << "[TEST] The input file does not contain an NIT table." << std::endl;
+    }
+
+    try {
+        std::vector<ServiceDescriptionSection> sdt_tables = SDT::parse(grouped_packets.at(SDT_PID));
+        sdt_tables[0].print();
+    }
+    catch (std::out_of_range& e) {
+        std::cerr << "[TEST] The input file does not contain an SDT table." << std::endl;
+    }
 
     return 0;
 }

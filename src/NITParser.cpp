@@ -43,7 +43,7 @@ std::vector<NetworkInformationSection> NIT::parse(std::vector<TSPacket>& ts_pack
         
         while(iter + 1 < descriptor_loop_end) {
             if (iter + 2 + *(iter + 1) > descriptor_loop_end) {
-                std::cerr << "[NIT PARSE] Malformed network descriptor.\n";
+                std::cerr << "[NIT PARSE] Malformed network descriptor." << std::endl;
                 return {};
             }
 
