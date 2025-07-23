@@ -14,6 +14,8 @@ class TSParser {
         TSPacket parseTSPacket(const uint8_t* packet, int packet_size, int index);
         std::unordered_map<uint16_t, std::vector<TSPacket>> groupPacketsByPID(const std::vector<TSPacket>& ts_packets);
         void printGroupedPackets(std::unordered_map<uint16_t, std::vector<TSPacket>> pid_groups);
+        
+        const char* getPIDName(uint16_t pid);
 };
 
 #endif
