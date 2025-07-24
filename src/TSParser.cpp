@@ -13,13 +13,8 @@ constexpr int TS_PACKET_SIZE_DVB = 204;
 
 constexpr uint8_t SYNC_BYTE = 0x47;
 
-TSPacket TSParser::parseTSPacket(const uint8_t* packet, int packet_size, int index) 
+TSPacket TSParser::parseTSPacket(const uint8_t* packet, int packet_size)
 {
-    if (packet[0] != SYNC_BYTE) {
-        std::cerr << "Packet " << index << " does not start with sync byte!\n";
-        exit(1); 
-    }
-
     TSPacket ts_packet;
     ts_packet.header.bf.sync_byte = packet[0];
     ts_packet.header.bf.transport_error_indicator    = (packet[1] & 0x80) >> 7;
@@ -60,7 +55,7 @@ TSPacket TSParser::parseTSPacket(const uint8_t* packet, int packet_size, int ind
         default:
             break;
     }
-
+    
     return ts_packet;
 }
 
@@ -88,8 +83,8 @@ int TSParser::getPacketSize(const char* ts_file)
     else {
         exit(1);
     }
-
     tsFile.close();
+    
     return packet_size;
 }
 
@@ -98,25 +93,27 @@ std::vector<TSPacket> TSParser::parseTransportStream(const char* ts_file)
     int packet_size = getPacketSize(ts_file);
     uint8_t packet[packet_size];
 
-    std::vector<TSPacket> ts_packets;
-    int packetCount = 0;
-
     std::ifstream tsFile(ts_file, std::ios::binary);
     if (!tsFile.is_open()) {
         std::cerr << "Failed to open TS file.\n";
         exit(1);
     }
     
-    while (tsFile.read(reinterpret_cast<char*>(packet), packet_size)) {
-        ts_packets.push_back(std::move(parseTSPacket(packet, packet_size, packetCount++)));
-    }
+    std::vector<TSPacket> ts_packets;
 
+    while (tsFile.read(reinterpret_cast<char*>(packet), packet_size))
+    {
+        TSPacket ts_packet = parseTSPacket(packet, packet_size);
+        if (ts_packet.header.bf.sync_byte == 0x47 && ts_packet.header.bf.transport_error_indicator == 0) // Only save valid packets
+            ts_packets.push_back(std::move(ts_packet));
+    }
     tsFile.close();
+
     return ts_packets;
 }
 
 std::unordered_map<uint16_t, std::vector<TSPacket>> TSParser::groupPacketsByPID(const std::vector<TSPacket>& ts_packets)
- {
+{
     std::unordered_map<uint16_t, std::vector<TSPacket>> pidGroups;
 
     for (const auto& packet : ts_packets) {
@@ -161,7 +158,7 @@ const char* TSParser::getPIDName(uint16_t pid, const std::unordered_map<uint16_t
     return "Unknown PID";
 }
 
-void TSParser::printGroupedPackets(std::unordered_map<uint16_t, std::vector<TSPacket>> pid_groups, const std::unordered_map<uint16_t, std::string>& custom_pid_names)
+void TSParser::printGroupedPackets(const std::unordered_map<uint16_t, std::vector<TSPacket>>& pid_groups, const std::unordered_map<uint16_t, std::string>& custom_pid_names)
 {
     for (const auto& [pid, packets] : pid_groups) {
         std::cout << "PID: 0x" << std::hex << pid 

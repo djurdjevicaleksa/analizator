@@ -61,7 +61,7 @@ public:
     void getProgress(int& programs_with_streams, int& total_programs) const;
 
     // Print all parsed information
-    void printInfo() const;
+    static void printInfo(const std::vector<ProgramInfo>&);
 
     // Get parsed program list
     const std::vector<ProgramInfo>& getPrograms() const;
