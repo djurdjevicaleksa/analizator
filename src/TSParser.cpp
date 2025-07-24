@@ -130,7 +130,7 @@ std::unordered_map<uint16_t, std::vector<TSPacket>> TSParser::groupPacketsByPID(
     return pidGroups;
 }
 
-const char* TSParser::getPIDName(uint16_t pid) 
+const char* TSParser::getPIDName(uint16_t pid, const std::unordered_map<uint16_t, std::string>& custom_pid_names) 
 {
     std::unordered_map<uint16_t, const char*> pid_names {
         {0x0000, "PAT (Program Association Table)"},
@@ -151,19 +151,24 @@ const char* TSParser::getPIDName(uint16_t pid)
         {0x1FFF, "Null Packet"}
     };
 
-    auto it = pid_names.find(pid);
-    if(it != pid_names.end()) {
-        return it->second;
-    }else {
-        return "Unknown PID";
+    auto it_custom = custom_pid_names.find(pid);
+    if (it_custom != custom_pid_names.end()) {
+        return it_custom->second.c_str();
     }
+
+    auto it_default = pid_names.find(pid);
+    if (it_default != pid_names.end()) {
+        return it_default->second;
+    }
+
+    return "Unknown PID";
 }
 
-void TSParser::printGroupedPackets(std::unordered_map<uint16_t, std::vector<TSPacket>> pid_groups)
+void TSParser::printGroupedPackets(std::unordered_map<uint16_t, std::vector<TSPacket>> pid_groups, const std::unordered_map<uint16_t, std::string>& custom_pid_names)
 {
     for (const auto& [pid, packets] : pid_groups) {
         std::cout << "PID: 0x" << std::hex << pid 
                   << " (" << std::dec << packets.size() << " packets)"
-                  << " - " << getPIDName(pid) << "\n";
+                  << " - " << getPIDName(pid, custom_pid_names) << "\n";
     }
 }
