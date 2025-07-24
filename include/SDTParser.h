@@ -7,6 +7,7 @@
 #include "SDT.h"
 
 namespace SDT {
+    const uint32_t PID = 0x0011; 
     std::vector<ServiceDescriptionSection> parse(std::vector<TSPacket>&);
 }
 

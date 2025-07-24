@@ -32,8 +32,6 @@ struct ServiceDescriptionSection {
 
         void print() const;
     };
-
-    const static uint32_t SDT_PID = 0x0011; 
     
     PacketHeader header;
     std::vector<Service> services;
