@@ -32,8 +32,6 @@ struct NetworkInformationSection {
         TSLoopEntry(uint16_t ts, uint16_t on, uint16_t len, std::vector<Descriptor>& desc) : tsid(ts), onid(on), length(len), descriptors(std::move(desc)) {}
         void print() const;
     };
-
-    const static uint32_t NIT_PID = 0x0010;
     
     PacketHeader header;    
     std::vector<Descriptor> network_descriptors;
