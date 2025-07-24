@@ -1,18 +1,20 @@
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Iinclude -g
+CXXFLAGS := -std=c++17 -Wall -fPIC -Iinclude
 
-SRC := $(wildcard src/*.cpp)
+QT_CFLAGS := $(shell pkg-config --cflags Qt5Widgets)
+QT_LIBS := $(shell pkg-config --libs Qt5Widgets)
+
+SRC := $(filter-out src/test.cpp, $(wildcard src/*.cpp))
 OBJ := $(SRC:.cpp=.o)
 
-TARGET := bin/test
+TARGET := bin/main
 
 $(TARGET): $(OBJ)
 	@mkdir -p bin
-	$(CXX) $(CXXFLAGS) -o $@ $^
-	@rm -f $(OBJ)
+	$(CXX) $(CXXFLAGS) $(QT_CFLAGS) -o $@ $^ $(QT_LIBS)
 
 src/%.o: src/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(QT_CFLAGS) -c $< -o $@
 
 .PHONY: clean
 clean:

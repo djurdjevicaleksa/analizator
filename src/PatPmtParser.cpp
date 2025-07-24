@@ -143,7 +143,7 @@ bool TsPaketParser::isComplete() const {
     return pat_found && pmt_found && !programs.empty();
 }
 
-void TsPaketParser::printInfo() const {
+void TsPaketParser::printInfo(const std::vector<ProgramInfo>& programs) {
     std::cout << "=== PMT PID-ovi pronađeni u PAT tabeli ===\n";
     for (const auto& prog : programs) {
         std::cout << "  - PMT PID: 0x" << std::hex << prog.pmt_pid << std::dec

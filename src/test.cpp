@@ -30,6 +30,9 @@ int main(int argc, char** argv) {
 
     Analizator analizator(argv[1]);
     analizator.printNITs();
+    analizator.printSDTs();
+    analizator.printProgramInfos();
+    analizator.printGroupedPackets();
 
     return 0;
 }
