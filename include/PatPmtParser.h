@@ -72,6 +72,8 @@ public:
     bool parsePAT(const std::vector<uint8_t>& section);
     bool parsePMT(uint16_t pid, const std::vector<uint8_t>& section);
 
+    void print(const std::vector<ProgramInfo>&, size_t&) const;
+
 private:
     std::vector<ProgramInfo> programs;
     SectionBuffer pat_section;

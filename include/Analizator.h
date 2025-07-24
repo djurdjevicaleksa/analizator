@@ -12,20 +12,21 @@
 #include "TSParser.h"
 
 class Analizator {
+public:
     std::vector<TSPacket> ts_packets;
     std::unordered_map<uint16_t, std::vector<TSPacket>> grouped_ts_packets;
     std::vector<NetworkInformationSection> nit_tables;
     std::vector<ServiceDescriptionSection> sdt_tables;
     std::vector<ProgramInfo> program_infos;
     std::unordered_map<uint16_t, std::string> custom_pid_names;
-
+private:
     void getNITs();
     void getSDTs();
     void getProgramInfos();
 
 public:
+    Analizator() = default;
     Analizator(const char*);
-    Analizator() = delete;
     ~Analizator() = default;
 
     inline void printNITs() const {
@@ -44,13 +45,18 @@ public:
         if (index < this->sdt_tables.size()) this->sdt_tables[index].print();
     };
 
-    inline void printProgramInfos() const {
-        TsPaketParser::printInfo(this->program_infos);
+    inline void printProgramInfo(size_t index) const {
+        TsPaketParser parser;
+        parser.print(this->program_infos, index);
     }
 
     inline void printGroupedPackets() const {
         TSParser parser;
         parser.printGroupedPackets(this->grouped_ts_packets, this->custom_pid_names);
+    }
+
+    inline void printTSPacket(size_t index) const {
+        if (index < this->ts_packets.size()) (this->ts_packets)[index].print();
     }
 };
 

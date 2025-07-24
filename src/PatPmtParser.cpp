@@ -153,7 +153,7 @@ void TsPaketParser::printInfo(const std::vector<ProgramInfo>& programs) {
     std::cout << "\n=== Detalji o programima ===\n";
     for (const auto& prog : programs) {
         std::cout << "Program " << prog.program_number << " (PMT PID: 0x" 
-                  << std::hex << prog.pmt_pid << std::dec << ")\n";
+                  << std::hex << prog.pmt_pid << std::dec << ")\n"; 
         for (const auto& stream : prog.streams) {
             std::cout << "  - PID " << stream.pid 
                       << ", Type: " << stream.codec << "\n";
@@ -161,6 +161,17 @@ void TsPaketParser::printInfo(const std::vector<ProgramInfo>& programs) {
     }
 }
 
+void TsPaketParser::print(const std::vector<ProgramInfo>& program_infos, size_t& index) const{
+    if (index > program_infos.size()) return;
+    ProgramInfo& prog = const_cast<std::vector<ProgramInfo>&>(program_infos)[index];
+
+    std::cout << "Program " << prog.program_number << " (PMT PID: 0x" 
+    << std::hex << prog.pmt_pid << std::dec << ")\n";
+    for (const auto& stream : prog.streams) {
+        std::cout << "  - PID " << stream.pid 
+        << ", Type: " << stream.codec << "\n";
+    }
+}
 
 void TsPaketParser::getProgress(int& with_streams, int& total) const {
     total = programs.size();
