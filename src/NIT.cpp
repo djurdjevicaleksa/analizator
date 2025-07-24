@@ -5,6 +5,31 @@
 #include "NIT.h"
 #include "Utils.h"
 
+std::string NetworkInformationSection::getDescriptorTypeFromTag(uint8_t tag) {
+    switch (tag)
+    {
+        case 0x40: return std::string("network_name_descriptor");
+        case 0x41: return std::string("service_list_descriptor");
+        case 0x42: return std::string("stuffing_descriptor");
+        case 0x43: return std::string("satellite_delivery_system_descriptor");
+        case 0x44: return std::string("cable_delivery_system_descriptor");
+        case 0x4A: return std::string("linkage_descriptor");
+        case 0x5A: return std::string("terrestrial_delivery_system_descriptor");
+        case 0x5B: return std::string("multilingual_network_name_descriptor");
+        case 0x5F: return std::string("private_data_specifier_descriptor");
+        case 0x62: return std::string("frequency_list_descriptor");
+        case 0x6C: return std::string("cell_list_descriptor");
+        case 0x6D: return std::string("cell_frequency_link_descriptor");
+        case 0x73: return std::string("default_authority_descriptor");
+        case 0x77: return std::string("time_slice_fec_identifier_descriptor");
+        case 0x79: return std::string("S2_satellite_delivery_system_descriptor");
+        case 0x7D: return std::string("XAIT_location_descriptor");
+        case 0x7E: return std::string("FTA_content_management_descriptor");
+        case 0x7F: return std::string("extension_descriptor");
+        default: return std::string("unknown descriptor");
+    }
+}
+
 void NetworkInformationSection::PacketHeader::print() const {
     utils::printLine("NIT TABLE HEADER");
     utils::printHex("table_id", this->table_id);
@@ -18,23 +43,13 @@ void NetworkInformationSection::PacketHeader::print() const {
     utils::printLine("/NIT TABLE HEADER/", 1, '=');
 }
 
-void NetworkInformationSection::Descriptor::print() const {
-    utils::printLine("DESCRIPTOR", 2, '-');
-    utils::printHex("descriptor_tag", this->tag, 2);
-    utils::printHex("descriptor_length", this->length, 2);
-    std::cout << std::string(2 * 4, ' ') << "descriptor_data: ";
-    for (auto ch : this->data) std::cout << ch;
-    std::cout << std::endl;
-    utils::printLine("/DESCRIPTOR/", 2, '-');
-}
-
 void NetworkInformationSection::TSLoopEntry::print() const {
     utils::printLine("TS LOOP ENTRY");
     utils::printHex("tsid", this->tsid);
     utils::printHex("onid", this->onid);
     utils::printHex("descriptors_length", this->length);
     for (const auto& desc : this->descriptors) {
-        desc.print();
+        desc.print(NetworkInformationSection::getDescriptorTypeFromTag);
     }
     utils::printLine("/TS LOOP ENTRY/");
 }
@@ -47,7 +62,7 @@ void NetworkInformationSection::print() const {
     utils::printLine("NETWORK DESCRIPTORS");
     utils::printHex("network_descriptors_length", this->header.network_descriptors_length);
     for (const auto& desc : this->network_descriptors) {
-        desc.print();
+        desc.print(NetworkInformationSection::getDescriptorTypeFromTag);
     }
     utils::printLine("/NETWORK DESCRIPTORS/");
 

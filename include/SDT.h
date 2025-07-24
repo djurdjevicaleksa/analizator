@@ -4,9 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "NIT.h"
-
-#define SDT_PID 0x0011
+#include "Descriptor.h"
 
 struct ServiceDescriptionSection {
     struct PacketHeader {
@@ -30,16 +28,19 @@ struct ServiceDescriptionSection {
         uint8_t running_status;
         bool free_ca_mode;
         uint16_t descriptors_loop_length;
-        std::vector<NetworkInformationSection::Descriptor> descriptors;
+        std::vector<Descriptor> descriptors;
 
         void print() const;
     };
+
+    const static uint32_t SDT_PID = 0x0011; 
     
     PacketHeader header;
     std::vector<Service> services;
     uint32_t crc;
 
     void print() const;
+    static std::string getDescriptorTypeFromTag(uint8_t);
 };
 
 #endif // _SDT_H
