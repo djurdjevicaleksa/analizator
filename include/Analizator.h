@@ -26,9 +26,17 @@ public:
         for (auto& nit: this->nit_tables) nit.print();
     }
 
+    inline void printNIT(size_t index) const {
+        if (index < this->nit_tables.size()) this->nit_tables[index].print();
+    };
+
     inline void printSDTs() const {
         for (auto& sdt: this->sdt_tables) sdt.print();
     }
+
+    inline void printSDT(size_t index) const {
+        if (index < this->sdt_tables.size()) this->sdt_tables[index].print();
+    };
 };
 
 #endif // _ANALIZATOR_H
