@@ -4,7 +4,7 @@ CXXFLAGS := -std=c++17 -Wall -fPIC -Iinclude
 QT_CFLAGS := $(shell pkg-config --cflags Qt5Widgets)
 QT_LIBS := $(shell pkg-config --libs Qt5Widgets)
 
-SRC := $(filter-out src/test.cpp, $(wildcard src/*.cpp))
+SRC := $(wildcard src/*.cpp)
 OBJ := $(SRC:.cpp=.o)
 
 TARGET := bin/main
