@@ -63,7 +63,7 @@ std::vector<NetworkInformationSection> NIT::parse(std::vector<TSPacket>& ts_pack
             uint16_t tsid = (iter[0] << 8) | iter[1];
             uint16_t onid = (iter[2] << 8) | iter[3];
             uint16_t transport_descriptors_length = ((iter[4] & 0b1111) << 8) | iter[5];
-            std::vector<NetworkInformationSection::Descriptor> descriptors;
+            std::vector<Descriptor> descriptors;
 
             uint8_t* inner_iter = &iter[6];
             uint8_t* inner_loop_end = inner_iter + transport_descriptors_length;

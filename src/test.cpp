@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
     ts_parser.printGroupedPackets(grouped_packets);
 
     try {
-        std::vector<NetworkInformationSection> nit_tables = NIT::parse(grouped_packets.at(NIT_PID));
+        std::vector<NetworkInformationSection> nit_tables = NIT::parse(grouped_packets.at(NetworkInformationSection::NIT_PID));
         nit_tables[0].print();
     }
     catch (std::out_of_range& e) {
@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
     }
 
     try {
-        std::vector<ServiceDescriptionSection> sdt_tables = SDT::parse(grouped_packets.at(SDT_PID));
+        std::vector<ServiceDescriptionSection> sdt_tables = SDT::parse(grouped_packets.at(ServiceDescriptionSection::SDT_PID));
         sdt_tables[0].print();
     }
     catch (std::out_of_range& e) {
