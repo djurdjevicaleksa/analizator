@@ -19,6 +19,7 @@ public:
     std::vector<ServiceDescriptionSection> sdt_tables;
     std::vector<ProgramInfo> program_infos;
     std::unordered_map<uint16_t, std::string> custom_pid_names;
+
 private:
     void getNITs();
     void getSDTs();
@@ -54,6 +55,8 @@ public:
     inline void printSDT(size_t index) const {
         if (index < this->sdt_tables.size()) this->sdt_tables[index].print();
     };
+
+    void trackPMTChanges();
 };
 
 #endif // _ANALIZATOR_H
