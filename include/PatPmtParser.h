@@ -51,17 +51,11 @@ class TsPaketParser {
 public:
     TsPaketParser();
 
-    // Parse one TS packet
-    bool parsePacket(const uint8_t* packet);
-
     // Check if PAT and all PMTs are found
     bool isComplete() const;
 
     // Get the number of programs and those with streams
     void getProgress(int& programs_with_streams, int& total_programs) const;
-
-    // Print all parsed information
-    static void printInfo(const std::vector<ProgramInfo>&);
 
     // Get parsed program list
     const std::vector<ProgramInfo>& getPrograms() const;
@@ -72,9 +66,18 @@ public:
     bool parsePAT(const std::vector<uint8_t>& section);
     bool parsePMT(uint16_t pid, const std::vector<uint8_t>& section);
 
-    void print(const std::vector<ProgramInfo>&, size_t&) const;
+    void printPMT(const std::vector<ProgramInfo>&, size_t&) const;
     void printPAT() const;
 
+    inline const char* streamTypeToString(StreamType type) const {
+        switch (type) {
+            case StreamType::VIDEO: return "Video";
+            case StreamType::AUDIO: return "Audio";
+            case StreamType::SUBTITLE: return "Subtitle";
+            case StreamType::DATA: return "Data";
+            default: return "Unknown";
+        }
+    }    
 
 private:
     std::vector<ProgramInfo> programs;

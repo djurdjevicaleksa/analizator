@@ -30,28 +30,8 @@ public:
     Analizator(const char*);
     ~Analizator() = default;
 
-    inline void printNITs() const {
-        for (auto& nit: this->nit_tables) nit.print();
-    }
-
-    inline void printNIT(size_t index) const {
-        if (index < this->nit_tables.size()) this->nit_tables[index].print();
-    };
-
-    inline void printSDTs() const {
-        for (auto& sdt: this->sdt_tables) sdt.print();
-    }
-
-    inline void printSDT(size_t index) const {
-        if (index < this->sdt_tables.size()) this->sdt_tables[index].print();
-    };
-
-    inline void printProgramInfo(size_t index) const {
-        this->pat_pmt_parser.print(this->program_infos, index);
-    }
-
-    inline void printPAT_info() const {
-        this->pat_pmt_parser.printPAT();
+    inline void printTSPacket(size_t index) const {
+        if (index < this->ts_packets.size()) (this->ts_packets)[index].print();
     }
 
     inline void printGroupedPackets() const {
@@ -59,9 +39,21 @@ public:
         parser.printGroupedPackets(this->grouped_ts_packets, this->custom_pid_names);
     }
 
-    inline void printTSPacket(size_t index) const {
-        if (index < this->ts_packets.size()) (this->ts_packets)[index].print();
+    inline void printPAT() const {
+        this->pat_pmt_parser.printPAT();
     }
+
+    inline void printPMT(size_t index) const {
+        this->pat_pmt_parser.printPMT(this->program_infos, index);
+    }
+
+    inline void printNIT(size_t index) const {
+        if (index < this->nit_tables.size()) this->nit_tables[index].print();
+    };
+
+    inline void printSDT(size_t index) const {
+        if (index < this->sdt_tables.size()) this->sdt_tables[index].print();
+    };
 };
 
 #endif // _ANALIZATOR_H

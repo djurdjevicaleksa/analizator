@@ -12,12 +12,9 @@ Analizator::Analizator(const char* input_ts_file_path) {
     this->ts_packets = std::move(ts_parser.parseTransportStream(input_ts_file_path));
     this->grouped_ts_packets = std::move(ts_parser.groupPacketsByPID(this->ts_packets));
 
-    
     this->getNITs();
     this->getSDTs();
     this->getProgramInfos();
-    
-    //...
 }
 
 void Analizator::getProgramInfos() {
@@ -53,6 +50,7 @@ void Analizator::getNITs() {
 }
 
 void Analizator::getSDTs() {
+    
     try {
         this->sdt_tables = std::move(SDT::parse(this->grouped_ts_packets.at(SDT::PID)));
     }

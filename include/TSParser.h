@@ -4,7 +4,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "../include/TSPacket.h"
+#include "TSPacket.h"
 
 class TSParser {
     public:

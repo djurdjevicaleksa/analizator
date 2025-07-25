@@ -1,12 +1,21 @@
-
 #ifndef _APPLICATION_H
 #define _APPLICATION_H
 
-#include <QApplication>
-#include <QMainWindow>
-#include <QTextEdit>
-#include <QVBoxLayout>
-#include <QString>
+#include <QtCore/QString>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QListWidgetItem>
+
+#include <sstream>
+#include <iostream>
 #include <unordered_map>
 #include <vector>
 

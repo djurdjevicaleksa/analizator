@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <cstring>
 
-#include "../include/TSParser.h" 
+#include "TSParser.h" 
 
 // Possible packet sizes
 constexpr int TS_PACKET_SIZE_STANDARD = 188;
