@@ -21,8 +21,7 @@ Analizator::Analizator(const char* input_ts_file_path) {
 }
 
 void Analizator::getProgramInfos() {
-    TsPaketParser pat_pmt_parser;
-    pat_pmt_parser.parseFromGroupedPackets(this->grouped_ts_packets);
+    this->pat_pmt_parser.parseFromGroupedPackets(this->grouped_ts_packets);
     this->program_infos = std::move(pat_pmt_parser.getPrograms());
 
     for (const auto& program : pat_pmt_parser.getPrograms()) {
@@ -61,3 +60,4 @@ void Analizator::getSDTs() {
         std::cerr << "[ANALIZATOR] Encountered an error while trying to parse SDTs: " << e.what() << std::endl;
     }
 }
+
