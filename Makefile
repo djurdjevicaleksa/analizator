@@ -1,8 +1,8 @@
 CXX := g++
 CXXFLAGS := -std=c++17 -Wall -fPIC -Iinclude -Iinclude/qt
 
-LIB_DIR := -Llib/qt
-QT_LIBS := -lQt5Widgets -lQt5Gui -lQt5Core
+QT_CFLAGS := $(shell pkg-config --cflags Qt5Widgets)
+QT_LIBS := $(shell pkg-config --libs Qt5Widgets)
 
 SRC := $(wildcard src/*.cpp)
 OBJ := $(SRC:.cpp=.o)
@@ -11,7 +11,7 @@ TARGET := bin/main
 
 $(TARGET): $(OBJ)
 	@mkdir -p bin
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIB_DIR) $(QT_LIBS) -Wl,-rpath=lib/qt
+	$(CXX) $(CXXFLAGS) $(QT_CFLAGS) -o $@ $^ $(QT_LIBS)
 
 src/%.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) $(QT_CFLAGS) -c $< -o $@
@@ -19,4 +19,3 @@ src/%.o: src/%.cpp
 .PHONY: clean
 clean:
 	rm -f src/*.o $(TARGET)
-	rm -rf bin/
