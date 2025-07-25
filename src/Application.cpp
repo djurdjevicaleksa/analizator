@@ -1,3 +1,5 @@
+
+
 #include "Application.h"
 
 #include <QDir>
@@ -65,7 +67,16 @@ void Application::showPackets() {
 
 void Application::listPAT() {
     resetOutputContainer();
-    // Placeholder
+    if (!outputLayout || !outputDisplay) return;
+
+    std::ostringstream oss;
+    std::streambuf* oldCoutBuf = std::cout.rdbuf();
+    std::cout.rdbuf(oss.rdbuf());
+
+    this->analizator.printPAT_info();
+
+    std::cout.rdbuf(oldCoutBuf);
+    outputDisplay->setPlainText(QString::fromStdString(oss.str()));
 }
 
 void Application::listPMT() {
@@ -261,3 +272,5 @@ QString Application::ansiToHtml(const QString& text) {
     html.replace("\n", "<br>");
     return html;
 }
+
+

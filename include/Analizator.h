@@ -23,6 +23,7 @@ private:
     void getNITs();
     void getSDTs();
     void getProgramInfos();
+    TsPaketParser pat_pmt_parser; 
 
 public:
     Analizator() = default;
@@ -46,8 +47,11 @@ public:
     };
 
     inline void printProgramInfo(size_t index) const {
-        TsPaketParser parser;
-        parser.print(this->program_infos, index);
+        this->pat_pmt_parser.print(this->program_infos, index);
+    }
+
+    inline void printPAT_info() const {
+        this->pat_pmt_parser.printPAT();
     }
 
     inline void printGroupedPackets() const {
