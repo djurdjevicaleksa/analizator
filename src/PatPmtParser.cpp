@@ -1,9 +1,9 @@
-#include "../include/PatPmtParser.h"
+#include "PatPmtParser.h"
+#include "Utils.h"
+
 #include <iostream>
 #include <iomanip>
 #include <cstring>
-
-
 
 
 // Stream type IDs (subset)
@@ -27,7 +27,6 @@
 #define DESCRIPTOR_SERVICE 0x48
 
 
-
 const char* get_codec_name(uint8_t stream_type) {
     switch (stream_type) {
         case STREAM_TYPE_MPEG1_VIDEO: return "MPEG-1 Video";
@@ -43,10 +42,6 @@ const char* get_codec_name(uint8_t stream_type) {
         default: return "Unknown";
     }
 }
-
-
-
-
 
 static StreamType get_stream_type(uint8_t stream_type_id) {
     switch (stream_type_id) {
@@ -68,17 +63,11 @@ static StreamType get_stream_type(uint8_t stream_type_id) {
     }
 }
 
-
-
 static void parse_descriptors(const uint8_t* data, size_t length, StreamInfo& stream_info) {
     size_t pos = 0;
     while (pos + 2 < length) {
         uint8_t tag = data[pos];
         uint8_t desc_length = data[pos + 1];
-
-        std::cout << "  >> Descriptor tag: 0x" << std::hex << (int)tag 
-          << ", length: " << std::dec << (int)desc_length << "\n";
-
 
         if (pos + 2 + desc_length > length) break; // Prevent overflow
 
@@ -122,15 +111,7 @@ static void parse_descriptors(const uint8_t* data, size_t length, StreamInfo& st
 
         pos += 2 + desc_length;
     }
-    std::cout << "  >> Final descriptor result: " << stream_info.codec << ", type: " << (int)stream_info.type << "\n";
-    std::cout << "  >> Raw descriptor data: ";
-for (size_t i = 0; i < length; ++i)
-    std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)data[i] << " ";
-std::cout << std::dec << "\n";
-
 }
-
-
 
 TsPaketParser::TsPaketParser() : packet_count(0), pat_found(false), pmt_found(false) {
     pat_section.buffer.resize(MAX_SECTION_SIZE);
@@ -193,15 +174,6 @@ bool TsPaketParser::parsePMT(uint16_t pid, const std::vector<uint8_t>& section) 
             sinfo.description = "";
             sinfo.language = "";
 
-            std::cout << "[PMT] stream_type_id = 0x" << std::hex << (int)stype
-          << ", PID = " << std::dec << epid
-          << ", codec = " << get_codec_name(stype)
-          << ", type = " << (int)get_stream_type(stype) << "\n";
-
-            
-            std::cout << "  > Descriptor length = " << es_info_len << "\n";
-
-
             if (es_info_len > 0 && pos + 5 + es_info_len <= section.size()) {
 
                 parse_descriptors(section.data() + pos + 5, es_info_len, sinfo);
@@ -218,10 +190,6 @@ bool TsPaketParser::parsePMT(uint16_t pid, const std::vector<uint8_t>& section) 
     }
 
     return false;
-}
-
-bool TsPaketParser::parsePacket(const uint8_t* packet) {
-    return false; // not used in grouped packets context
 }
 
 bool TsPaketParser::parseFromGroupedPackets(const std::unordered_map<uint16_t, std::vector<TSPacket>>& grouped_packets) {
@@ -270,36 +238,6 @@ bool TsPaketParser::isComplete() const {
     return pat_found && pmt_found && !programs.empty();
 }
 
-void TsPaketParser::printInfo(const std::vector<ProgramInfo>& programs) {
-    std::cout << "=== PMT PID-ovi pronađeni u PAT tabeli ===\n";
-    for (const auto& prog : programs) {
-        std::cout << "  - PMT PID: 0x" << std::hex << prog.pmt_pid << std::dec
-                  << " (Program No: " << prog.program_number << ")\n";
-    }
-
-    std::cout << "\n=== Detalji o programima ===\n";
-    for (const auto& prog : programs) {
-        std::cout << "Program " << prog.program_number << " (PMT PID: 0x" 
-                  << std::hex << prog.pmt_pid << std::dec << ")\n"; 
-        for (const auto& stream : prog.streams) {
-            std::cout << "  - PID " << stream.pid 
-                      << ", Type: " << stream.codec << "\n";
-        }
-    }
-}
-
-void TsPaketParser::print(const std::vector<ProgramInfo>& program_infos, size_t& index) const{
-    if (index > program_infos.size()) return;
-    ProgramInfo& prog = const_cast<std::vector<ProgramInfo>&>(program_infos)[index];
-
-    std::cout << "Program " << prog.program_number << " (PMT PID: 0x" 
-    << std::hex << prog.pmt_pid << std::dec << ")\n";
-    for (const auto& stream : prog.streams) {
-        std::cout << "  - PID " << stream.pid 
-        << ", Type: " << stream.codec << "\n";
-    }
-}
-
 void TsPaketParser::getProgress(int& with_streams, int& total) const {
     total = programs.size();
     with_streams = 0;
@@ -313,19 +251,48 @@ const std::vector<ProgramInfo>& TsPaketParser::getPrograms() const {
 }
 
 void TsPaketParser::printPAT() const {
-    if (!pat_found || programs.empty()) {
-        std::cout << "[PAT] PAT tabela nije pronađena ili je prazna.\n";
+    if (!pat_found) {
+        std::cout << "U strimu nije pronadjena nijedna PAT tabela.\n";
         return;
     }
 
-    std::cout << "=== Sadržaj PAT tabele ===\n";
+    if (programs.empty()) {
+        std::cout << "Nadjena PAT tabela je prazna.\n";
+        return;
+    }
+
+    utils::printLine("PAT TABLE", 0, '=');
     for (const auto& prog : programs) {
         std::cout << "  - Program broj: " << prog.program_number 
                   << ", PMT PID: 0x" << std::hex << std::setw(4) << std::setfill('0') 
                   << prog.pmt_pid << std::dec << "\n";
     }
+    utils::printLine("/PAT TABLE/", 0, '=');
 }
 
+void TsPaketParser::printPMT(const std::vector<ProgramInfo>& program_infos, size_t& index) const {
+    if (index >= program_infos.size()) return;
 
+    const ProgramInfo& prog = program_infos[index];
 
+    utils::printLine("PMT TABLE", 0, '=');
+    std::cout << "Program " << prog.program_number 
+              << " (PMT PID: 0x" << std::hex << prog.pmt_pid << std::dec << ")\n";
 
+    for (const auto& stream : prog.streams) {
+        if ((stream.type != StreamType::DATA)) 
+        {
+            std::cout << "----------------------------------------\n";
+            std::cout << "  PID: " << stream.pid << "\n";
+            std::cout << "  Type: " << this->streamTypeToString(stream.type) << "\n";
+            std::cout << "  Codec: " << stream.codec << "\n";
+            std::cout << "  Stream Type ID: 0x" << std::hex << static_cast<int>(stream.stream_type_id) << std::dec << "\n";
+
+            if (!stream.language.empty())
+                std::cout << "  Language: " << stream.language << "\n";
+            if (!stream.description.empty())
+                std::cout << "  Description: " << stream.description << "\n";
+        }
+    }
+    utils::printLine("/PMT TABLE/", 0, '=');
+}
