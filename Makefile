@@ -19,3 +19,4 @@ src/%.o: src/%.cpp
 .PHONY: clean
 clean:
 	rm -f src/*.o $(TARGET)
+	rm -rf bin/
