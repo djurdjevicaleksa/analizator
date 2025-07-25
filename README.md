@@ -2,7 +2,7 @@
 - git clone
 - cd analizator/
 - make
-- ./bin/main <root_path_to_streams>
+- ./bin/main <Path to the directory which contains .ts files>
 
 # Zadatak A: Analizator prenosnog toka
 Da bi se obavili svi scenariji koje smo imali u okviru prijema i reprodukcije satelitskog signala, neophodno je razumeti format prenosnog toka. Nakon što se ulazni stepen pozicionira na zadatu frekvenciju, i nakon što se signal deskrembluje, demultiplekser na svom ulazu raspolaže bitskim tokom u formatu MPEG-TS. U okviru implementacije u ovom zadatku, potrebno je raščlaniti ovaj format na njegove sastavne delove i prikazati njegov sadržaj u komandnoj liniji za potrebe analize. Umesto rada sa ulaznim stepenom, vaš softver treba da preuzme i parsira TS datoteku.
