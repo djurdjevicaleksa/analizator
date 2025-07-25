@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <algorithm>
 
 #include "Analizator.h"
 #include "TSParser.h"
@@ -58,4 +59,3 @@ void Analizator::getSDTs() {
         std::cerr << "[ANALIZATOR] Encountered an error while trying to parse SDTs: " << e.what() << std::endl;
     }
 }
-
