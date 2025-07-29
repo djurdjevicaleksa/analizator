@@ -8,7 +8,7 @@ void Descriptor::print(std::string (*tagToNameMethod)(uint8_t)) const {
             << std::uppercase << std::setfill('0') << std::setw(sizeof(this->tag) * 2)
             << static_cast<uint64_t>(this->tag) << std::dec << " => "
             << tagToNameMethod(this->tag) << std::endl;
-    utils::printHex("descriptor_length", this->length, 2);
+    utils::printDataPoint("descriptor_length", this->length, 2);
     std::cout << std::string(2 * 4, ' ') << "descriptor_data: ";
     for (auto ch : this->data) std::cout << ch;
     std::cout << std::endl;
