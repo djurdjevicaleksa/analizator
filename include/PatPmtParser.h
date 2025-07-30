@@ -31,8 +31,10 @@ struct StreamInfo {
 
 // Program information
 struct ProgramInfo {
-    uint16_t program_number = 0;
-    uint16_t pmt_pid = 0;
+    uint16_t program_number;
+    uint16_t pmt_pid;
+    uint8_t version;
+    uint16_t pcr_pid;
     std::vector<StreamInfo> streams;
 };
 
@@ -61,7 +63,7 @@ public:
     const std::vector<ProgramInfo>& getPrograms() const;
 
     bool parseFromGroupedPackets(const std::unordered_map<uint16_t, std::vector<TSPacket>>& grouped_packets);
-
+    void comparePMTs(const ProgramInfo& oldPMT, const ProgramInfo& newPMT);
 
     bool parsePAT(const std::vector<uint8_t>& section);
     bool parsePMT(uint16_t pid, const std::vector<uint8_t>& section);

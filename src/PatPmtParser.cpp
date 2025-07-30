@@ -4,7 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cstring>
-
+#include <algorithm>
 
 // Stream type IDs (subset)
 #define STREAM_TYPE_MPEG1_VIDEO 0x01
@@ -113,6 +113,38 @@ static void parse_descriptors(const uint8_t* data, size_t length, StreamInfo& st
     }
 }
 
+void TsPaketParser::comparePMTs(const ProgramInfo& oldPMT, const ProgramInfo& newPMT) {
+    if (oldPMT.pmt_pid != newPMT.pmt_pid) return;
+    if (oldPMT.version == newPMT.version) return;
+
+    std::cout << "PMT version changed: " << (int)oldPMT.version << " -> " << (int)newPMT.version << "\n";
+
+    for (const auto& newStream : newPMT.streams) {
+        auto it = std::find_if(oldPMT.streams.begin(), oldPMT.streams.end(),
+                               [&](const StreamInfo& oldStream) { return oldStream.pid == newStream.pid; });
+
+        if (it == oldPMT.streams.end()) {
+            std::cout << "  + New stream: PID " << newStream.pid
+                      << ", type 0x" << std::hex << (int)newStream.stream_type_id << std::dec << "\n";
+        } else if (it->stream_type_id != newStream.stream_type_id) {
+            std::cout << "  ~ Changed stream type: PID " << newStream.pid
+                      << " from 0x" << std::hex << (int)it->stream_type_id
+                      << " to 0x" << (int)newStream.stream_type_id << std::dec << "\n";
+        }
+    }
+    
+    for (const auto& oldStream : oldPMT.streams) {
+        auto it = std::find_if(newPMT.streams.begin(), newPMT.streams.end(),
+                               [&](const StreamInfo& newStream) {
+                                   return newStream.pid == oldStream.pid;
+                               });
+
+        if (it == newPMT.streams.end()) {
+            std::cout << "  - Removed stream: PID " << oldStream.pid << "\n";
+        }
+    }
+}
+
 TsPaketParser::TsPaketParser() : packet_count(0), pat_found(false), pmt_found(false) {
     pat_section.buffer.resize(MAX_SECTION_SIZE);
 }
@@ -152,6 +184,9 @@ bool TsPaketParser::parsePMT(uint16_t pid, const std::vector<uint8_t>& section) 
 
     for (auto& prog : programs) {
         if (prog.pmt_pid != pid) continue;
+        
+        prog.version = (section[5] >> 1) & 0x1F;
+        prog.pcr_pid = ((section[8] & 0x1F) << 8) | section[9];
 
         uint16_t pil = ((section[10] & 0x0F) << 8) | section[11];
         int pos = 12 + pil;
@@ -178,7 +213,7 @@ bool TsPaketParser::parsePMT(uint16_t pid, const std::vector<uint8_t>& section) 
 
                 parse_descriptors(section.data() + pos + 5, es_info_len, sinfo);
             } 
-
+            
             prog.streams.push_back(sinfo);
             
 
@@ -215,6 +250,8 @@ bool TsPaketParser::parseFromGroupedPackets(const std::unordered_map<uint16_t, s
         auto it = grouped_packets.find(prog.pmt_pid);
         if (it == grouped_packets.end()) continue;
 
+        ProgramInfo oldPMT = prog;
+
         for (const auto& packet : it->second) {
             if (!packet.payload || packet.payload_length == 0) continue;
             if (!packet.header.bf.payload_unit_start_indicator) continue;
@@ -227,7 +264,11 @@ bool TsPaketParser::parseFromGroupedPackets(const std::unordered_map<uint16_t, s
 
             std::vector<uint8_t> section(section_start, section_start + section_len);
 
-            if (parsePMT(prog.pmt_pid, section)) break;
+            if (parsePMT(prog.pmt_pid, section)){
+                comparePMTs(oldPMT, prog);
+                break;
+            }
+
         }
     }
 
@@ -265,7 +306,10 @@ void TsPaketParser::printPAT() const {
     for (const auto& prog : programs) {
         std::cout << "  - Program broj: " << prog.program_number 
                   << ", PMT PID: 0x" << std::hex << std::setw(4) << std::setfill('0') 
-                  << prog.pmt_pid << std::dec << "\n";
+                  << prog.pmt_pid << std::dec
+                  << ", Version :" << (int)prog.version
+                  << ", PCR PID: 0x" << std::hex << std::setw(4) << std::setfill('0') 
+                  << prog.pcr_pid << std::dec << "\n";
     }
     utils::printLine("/PAT TABLE/", 0, '=');
 }
@@ -277,8 +321,9 @@ void TsPaketParser::printPMT(const std::vector<ProgramInfo>& program_infos, size
 
     utils::printLine("PMT TABLE", 0, '=');
     std::cout << "Program " << prog.program_number 
-              << " (PMT PID: 0x" << std::hex << prog.pmt_pid << std::dec << ")\n";
-
+              << " (PMT PID: 0x" << std::hex << prog.pmt_pid << std::dec << "\n";
+    std::cout << "Version: " << (int)prog.version << "\n";
+    std::cout << "PCR PID: 0x" << std::hex << prog.pcr_pid << std::dec << ")\n";
     for (const auto& stream : prog.streams) {
         if ((stream.type != StreamType::DATA)) 
         {
