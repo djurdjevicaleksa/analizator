@@ -6,6 +6,7 @@
 #include <cstddef>
 
 #include "Descriptor.h"
+#include "DescriptorTemplatization.h"
 
 /*
     STD: The stuffing descriptor provides a means of invalidating previously
@@ -34,5 +35,7 @@ namespace Descriptors {
         void print(std::size_t) const override;
     };
 }
+
+template<> struct DerivedDescriptorFromTag<Descriptors::StuffingDescriptor::tag> { using type = Descriptors::StuffingDescriptor; };
 
 #endif // _STUFFING_DESCRIPTOR_H

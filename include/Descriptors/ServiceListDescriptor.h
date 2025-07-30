@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "Descriptor.h"
+#include "DescriptorTemplatization.h"
 
 /*
     STD: The service list descriptor provides a means of listing the services by service_id and service type.
@@ -46,5 +47,7 @@ namespace Descriptors {
         void print(std::size_t) const override;
     };
 }
+
+template<> struct DerivedDescriptorFromTag<Descriptors::ServiceListDescriptor::tag> {using type = Descriptors::ServiceListDescriptor; };
 
 #endif // _SERVICE_LIST_DESCRIPTOR_H
