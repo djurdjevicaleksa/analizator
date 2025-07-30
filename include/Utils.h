@@ -115,13 +115,13 @@
 
 namespace utils {
     template<typename T>
-    void printDataPoint(const std::string& label, T value, int indent = 1) {
+    void printDataPoint(const std::string& label, T value, int indent = 1, std::string& explanation = "") {
         std::cout << std::string(indent * 4, ' ')
                   << label << ": 0x"
                   << std::hex << std::uppercase << std::setfill('0')
                   << std::setw(sizeof(T) * 2)
                   << static_cast<uint64_t>(value)
-                  << std::dec << std::endl;
+                  << std::dec << "(" << explanation << ")" << std::endl;
     }
 
     void printDataPoint(const std::string& label, const std::string& value, int indent = 1) {
@@ -130,7 +130,16 @@ namespace utils {
                 
     void printLine(const std::string& label, int indent = 1, char border = '=');
 
-    void printByteArrayHex(const std::string&, const std::uint8_t*, std::size_t);
+    void printByteArrayHex(const std::uint8_t* array, std::size_t length, std::size_t indent_level, std::size_t bytes_per_line);
+
+    inline std::uint32_t readMSB32(const std::uint8_t* start) {
+        return (static_cast<std::uint32_t>(start[0]) << 24) | (static_cast<std::uint32_t>(start[1]) << 16)
+                | (static_cast<std::uint32_t>(start[2]) << 8) | static_cast<std::uint32_t>(start[3]);
+    }
+
+    inline std::uint16_t readMSB16(const std::uint8_t* start) {
+        return (static_cast<std::uint16_t>(start[0]) << 8) | static_cast<std::uint16_t>(start[1]);
+    }
 }
 
 

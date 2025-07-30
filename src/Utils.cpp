@@ -19,11 +19,21 @@ void utils::printLine(const std::string& label, size_t indent, char border) {
                 << std::string(5, border) << std::endl;
 }
 
-void utils::printByteArrayHex(const std::string& label, const std::uint8_t* array, std::size_t indent_level) {
+void utils::printByteArrayHex(const std::uint8_t* array, std::size_t length, std::size_t indent_level, std::size_t bytes_per_line) {
 
-    std::cout << std::string(indent_level * 4, ' ') << 
+    if (bytes_per_line == 0) return;
+    
+    std::size_t counter = 0;
+    
+    for (std::size_t i = 0; i < length; i++) {
+        if (counter % bytes_per_line == 0) std::cout << std::string(indent_level * 4, ' ');
 
-} // NASTAVI PRINT STUFFING DESCRIPTORA
+        std::cout << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << array[i] << ' ';
+        counter++;
+
+        if (counter % bytes_per_line == 0) std::cout << std::endl;
+    }
+}
 
 
 // utils::mmap::mmap_t::mmap_t(const char* input_file) {

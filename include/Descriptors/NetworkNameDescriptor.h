@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "Descriptor.h"
+#include "DescriptorTemplatization.h"
 
 /*
     STD: The network name descriptor provides the network name in text form.
@@ -34,5 +35,7 @@ namespace Descriptors {
         void print(std::size_t indent_level) const override;
     };
 }
+
+template<> struct DerivedDescriptorFromTag<Descriptors::NetworkNameDescriptor::tag> { using type = Descriptors::NetworkNameDescriptor; };
 
 #endif // _NETWORK_NAME_DESCRIPTOR_H
