@@ -1,4 +1,9 @@
 #include <cstdint>
+#include <algorithm>
+<<<<<<< Updated upstream
+=======
+#include <cassert>
+>>>>>>> Stashed changes
 
 #include "Analizator.h"
 #include "TSParser.h"
@@ -56,6 +61,69 @@ void Analizator::getSDTs() {
     }
     catch (std::out_of_range& e) {
         std::cerr << "[ANALIZATOR] Encountered an error while trying to parse SDTs: " << e.what() << std::endl;
+    }
+}
+
+void Analizator::trackPMTChanges() {
+
+    if (this->program_infos.size() < 0) {
+        std::cout << "[PMT TRACK] No changes detected." << std::endl;
+    }
+
+    for (size_t i = 1; i < this->program_infos.size(); i++) {
+        if(this->program_infos[i - 1].version != this->program_infos[i].version) {
+
+            // Nadji TS pakete koji nose PCR info
+            uint16_t& target_ts_packet_pid = this->program_infos[i].pcr_pid;
+            std::vector<TSPacket> ts_packets = this->grouped_ts_packets.at(target_ts_packet_pid);
+
+            // Izbaci pakete koji nemaju adaption field
+            ts_packets.erase(
+                std::remove_if(ts_packets.begin(), ts_packets.end(), [](TSPacket& obj) {return obj.adaptation_field == nullptr;}), ts_packets.end()
+            );
+
+            ts_packets.erase(
+                std::remove_if(ts_packets.begin(), ts_packets.end(), [](TSPacket& obj)
+                    {
+                        uint8_t* adaption_field_start = obj.adaptation_field;
+                        uint8_t* adaption_field_end = adaption_field_start + obj.adaptation_field_length;
+
+                        if (adaption_field_start + 1 > adaption_field_end) return true;
+                        if (!((obj.adaptation_field[1]  >> 4) & 0b1)) return true;
+                        return false;
+                    }
+                ),
+                ts_packets.end()
+            );
+
+            for (auto it = ts_packets.begin(); it < ts_packets.end(); it++) {
+
+                TSPacket& current_packet = *it;
+
+                uint8_t* adaption_field_start = current_packet.adaptation_field;
+                uint8_t* adaption_field_end = adaption_field_start + current_packet.adaptation_field_length;
+
+                uint8_t* pcr_field = &adaption_field_start[2];
+                
+                assert(pcr_field < adaption_field_end);
+                assert(pcr_field + 6 <= adaption_field_end);
+
+                
+                uint64_t pcr_base = ((uint64_t)pcr_field[0] << 25) |
+                    ((uint64_t)pcr_field[1] << 17) |
+                    ((uint64_t)pcr_field[2] << 9)  |
+                    ((uint64_t)pcr_field[3] << 1)  |
+                    ((uint64_t)pcr_field[4] >> 7);
+
+                uint16_t pcr_extension = ((pcr_field[4] & 0b1) << 8) | pcr_field[5];
+
+                uint64_t pcr = pcr_base * 300 + pcr_extension;
+                double pcr_time_seconds = (double)pcr / 27e6;
+
+                std::cout << "TIME: " << pcr_time_seconds << std::endl;
+            }
+
+        }
     }
 }
 
