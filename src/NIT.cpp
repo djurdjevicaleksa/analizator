@@ -32,22 +32,22 @@ std::string NetworkInformationSection::getDescriptorTypeFromTag(uint8_t tag) {
 
 void NetworkInformationSection::PacketHeader::print() const {
     utils::printLine("NIT TABLE HEADER");
-    utils::printHex("table_id", this->table_id);
-    utils::printHex("section_syntax_indicator", this->section_syntax_indicator);
-    utils::printHex("section_length", this->section_length);
-    utils::printHex("network_id", this->network_id);
-    utils::printHex("version_number", this->version_number);
-    utils::printHex("current_next_indicator", this->current_next_indicator);
-    utils::printHex("section_number", this->section_number);
-    utils::printHex("last_section_number", this->last_section_number);
+    utils::printDataPoint("table_id", this->table_id);
+    utils::printDataPoint("section_syntax_indicator", this->section_syntax_indicator);
+    utils::printDataPoint("section_length", this->section_length);
+    utils::printDataPoint("network_id", this->network_id);
+    utils::printDataPoint("version_number", this->version_number);
+    utils::printDataPoint("current_next_indicator", this->current_next_indicator);
+    utils::printDataPoint("section_number", this->section_number);
+    utils::printDataPoint("last_section_number", this->last_section_number);
     utils::printLine("/NIT TABLE HEADER/", 1, '=');
 }
 
 void NetworkInformationSection::TSLoopEntry::print() const {
     utils::printLine("TS LOOP ENTRY");
-    utils::printHex("tsid", this->tsid);
-    utils::printHex("onid", this->onid);
-    utils::printHex("descriptors_length", this->length);
+    utils::printDataPoint("tsid", this->tsid);
+    utils::printDataPoint("onid", this->onid);
+    utils::printDataPoint("descriptors_length", this->length);
     for (const auto& desc : this->descriptors) {
         desc.print(NetworkInformationSection::getDescriptorTypeFromTag);
     }
@@ -60,19 +60,19 @@ void NetworkInformationSection::print() const {
     this->header.print();
 
     utils::printLine("NETWORK DESCRIPTORS");
-    utils::printHex("network_descriptors_length", this->header.network_descriptors_length);
+    utils::printDataPoint("network_descriptors_length", this->header.network_descriptors_length);
     for (const auto& desc : this->network_descriptors) {
         desc.print(NetworkInformationSection::getDescriptorTypeFromTag);
     }
     utils::printLine("/NETWORK DESCRIPTORS/");
 
     utils::printLine("TS DESCRIPTORS");
-    utils::printHex("ts_loop_length", this->header.transport_stream_loop_length);
+    utils::printDataPoint("ts_loop_length", this->header.transport_stream_loop_length);
     for (const auto& entry : this->ts_loop_entries) {
         entry.print();
     }
     utils::printLine("/TS DESCRIPTORS/");
 
-    utils::printHex("CRC", this->crc);
+    utils::printDataPoint("CRC", this->crc);
     utils::printLine("/NIT TABLE/", 0, '=');
 }

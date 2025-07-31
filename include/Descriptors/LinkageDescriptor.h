@@ -8,6 +8,7 @@
 #include <string>
 
 #include "Descriptor.h"
+#include "DescriptorTemplatization.h"
 #include "MobileHandOverLinkage.h"
 #include "EventLinkageInfo.h"
 #include "ExtendedEventLinkageInfo.h"
@@ -39,5 +40,7 @@ namespace Descriptors {
         std::string deduceLinkageType() const;
     };
 }
+
+template<> struct DerivedDescriptorFromTag<Descriptors::LinkageDescriptor::tag> { using type = Descriptors::LinkageDescriptor; };
 
 #endif // _LINKAGE_DESCRIPTOR_H

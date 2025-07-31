@@ -32,26 +32,26 @@ std::string ServiceDescriptionSection::getDescriptorTypeFromTag(uint8_t tag) {
 
 void ServiceDescriptionSection::PacketHeader::print() const {
     utils::printLine("SDT TABLE HEADER");
-    utils::printHex("table_id", table_id);
-    utils::printHex("section_syntax_indicator", section_syntax_indicator);
-    utils::printHex("section_length", section_length);
-    utils::printHex("transport_stream_id", transport_stream_id);
-    utils::printHex("version_number", version_number);
-    utils::printHex("current_next_indicator", current_next_indicator);
-    utils::printHex("section_number", section_number);
-    utils::printHex("last_section_number", last_section_number);
-    utils::printHex("original_network_id", original_network_id);
+    utils::printDataPoint("table_id", table_id);
+    utils::printDataPoint("section_syntax_indicator", section_syntax_indicator);
+    utils::printDataPoint("section_length", section_length);
+    utils::printDataPoint("transport_stream_id", transport_stream_id);
+    utils::printDataPoint("version_number", version_number);
+    utils::printDataPoint("current_next_indicator", current_next_indicator);
+    utils::printDataPoint("section_number", section_number);
+    utils::printDataPoint("last_section_number", last_section_number);
+    utils::printDataPoint("original_network_id", original_network_id);
     utils::printLine("/SDT TABLE HEADER/", 1, '=');
 }
 
 void ServiceDescriptionSection::Service::print() const {
     utils::printLine("SERVICE", 2, '-');
-    utils::printHex("service_id", service_id, 2);
-    utils::printHex("eit_schedule_flag", eit_schedule_flag, 2);
-    utils::printHex("eit_present_following_flag", eit_present_following_flag, 2);
-    utils::printHex("running_status", running_status, 2);
-    utils::printHex("free_ca_mode", free_ca_mode, 2);
-    utils::printHex("descriptors_loop_length", descriptors_loop_length, 2);
+    utils::printDataPoint("service_id", service_id, 2);
+    utils::printDataPoint("eit_schedule_flag", eit_schedule_flag, 2);
+    utils::printDataPoint("eit_present_following_flag", eit_present_following_flag, 2);
+    utils::printDataPoint("running_status", running_status, 2);
+    utils::printDataPoint("free_ca_mode", free_ca_mode, 2);
+    utils::printDataPoint("descriptors_loop_length", descriptors_loop_length, 2);
 
     for (const auto& desc : descriptors) {
         desc.print(ServiceDescriptionSection::getDescriptorTypeFromTag);
@@ -71,6 +71,6 @@ void ServiceDescriptionSection::print() const {
     }
     utils::printLine("/SERVICES/", 1);
 
-    utils::printHex("CRC", crc);
+    utils::printDataPoint("CRC", crc);
     utils::printLine("/SDT TABLE/", 0, '=');
 }
