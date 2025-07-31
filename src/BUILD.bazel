@@ -1,0 +1,6 @@
+cc_binary(
+    name = "DVB-Analizator",
+    srcs = ["main.cpp"],
+    deps = ["//src/Application:Application"],
+    cxxopts = ["-Wall", "-Wextra", "-std=c++17"]
+)

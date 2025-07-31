@@ -1,3 +1,6 @@
 ts/
 bin/
 .vscode/
+dtv/
+third_party/qt-everywhere-src-5.15.11/*
+!third_party/qt-everywhere-src-5.15.11/.gitkeep
