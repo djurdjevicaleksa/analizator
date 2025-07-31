@@ -1,9 +1,6 @@
 #include <cstdint>
 #include <algorithm>
-<<<<<<< Updated upstream
-=======
 #include <cassert>
->>>>>>> Stashed changes
 
 #include "Analizator.h"
 #include "TSParser.h"
