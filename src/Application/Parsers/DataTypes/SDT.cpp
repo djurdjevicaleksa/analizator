@@ -1,8 +1,8 @@
 #include <iostream>
 #include <iomanip>
 
-#include "SDTParser.h"
-#include "Utils.h"
+#include "SDT.h"
+#include "src/Application/Utilities/Utils.h"
 
 std::string ServiceDescriptionSection::getDescriptorTypeFromTag(uint8_t tag) {
     switch (tag)
@@ -54,7 +54,8 @@ void ServiceDescriptionSection::Service::print() const {
     utils::printDataPoint("descriptors_loop_length", descriptors_loop_length, 2);
 
     for (const auto& desc : descriptors) {
-        desc.print(ServiceDescriptionSection::getDescriptorTypeFromTag);
+        // desc.print(ServiceDescriptionSection::getDescriptorTypeFromTag);
+        // FIXME TODO USING THE OLD DESCRIPTOR
     }
 
     utils::printLine("/SERVICE/", 2, '-');

@@ -6,8 +6,8 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "Descriptor.h"
-#include "DescriptorTemplatization.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 /*
     STD: The network name descriptor provides the network name in text form.
@@ -15,7 +15,7 @@
 
 namespace Descriptors {
     
-    class NetworkNameDescriptor: Descriptor {
+    class NetworkNameDescriptor: public Descriptor {
     
         std::unique_ptr<std::uint8_t[]> data;
         
@@ -34,8 +34,12 @@ namespace Descriptors {
     
         void print(std::size_t indent_level) const override;
     };
+    
+    template<>
+    struct DerivedDescriptorFromTag<NetworkNameDescriptor::tag> {
+        using type = NetworkNameDescriptor;
+    };
 }
 
-template<> struct DerivedDescriptorFromTag<Descriptors::NetworkNameDescriptor::tag> { using type = Descriptors::NetworkNameDescriptor; };
 
 #endif // _NETWORK_NAME_DESCRIPTOR_H

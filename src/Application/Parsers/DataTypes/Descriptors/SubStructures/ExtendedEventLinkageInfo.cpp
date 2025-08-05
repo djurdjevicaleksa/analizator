@@ -1,8 +1,11 @@
 #include <cstdint>
+#include <cstddef>
 #include <optional>
 #include <stdexcept>
+#include <iostream>
 
 #include "ExtendedEventLinkageInfo.h"
+#include "src/Application/Utilities/Utils.h"
 
 SubStructs::ExtendedEventLinkageInfo::ExtendedEventLinkageInfoEntry::ExtendedEventLinkageInfoEntry(const std::uint8_t* start) 
     : SubStructs::EventLinkageInfo(start) {
@@ -66,6 +69,20 @@ std::string SubStructs::ExtendedEventLinkageInfo::ExtendedEventLinkageInfoEntry:
     }
 }
 
+void SubStructs::ExtendedEventLinkageInfo::ExtendedEventLinkageInfoEntry::print(std::size_t indent_level) const {
+
+    utils::printLine("Extended event linkage info entry", indent_level, '=');
+    utils::printDataPoint("Link type", this->link_type, indent_level, this->deduceLinkType());
+    utils::printDataPoint("Target ID type", this->target_id_type, indent_level, this->deduceTargetIdType());
+    utils::printDataPoint("Original network ID flag", this->original_network_id_flag, indent_level);
+    utils::printDataPoint("Service ID flag", this->service_id_flag, indent_level);
+    if (this->user_defined_id.has_value()) utils::printDataPoint("User-defined ID", this->user_defined_id.value());
+    if (this->target_transport_stream_id.has_value()) utils::printDataPoint("Target transport stream ID", this->target_transport_stream_id.value());
+    if (this->target_original_network_id.has_value()) utils::printDataPoint("Target original network ID", this->target_original_network_id.value());
+    if (this->target_service_id.has_value()) utils::printDataPoint("Target service ID", this->target_service_id.value());
+    utils::printLine("Extended event linkage info entry", indent_level, '=');
+}
+
 // ============================
 
 SubStructs::ExtendedEventLinkageInfo::ExtendedEventLinkageInfo(const std::uint8_t* start) {
@@ -81,4 +98,11 @@ SubStructs::ExtendedEventLinkageInfo::ExtendedEventLinkageInfo(const std::uint8_
         
         loop_start = last_entry.end_pointer;
     }
+}
+
+void SubStructs::ExtendedEventLinkageInfo::print(std::size_t indent_level) const {
+    utils::printLine("Extended event linkage info", indent_level, '=');
+    utils::printDataPoint("Loop length", this->loop_length, indent_level);
+    for (std::size_t i = 0; i < this->loop.size(); i++) this->loop[i].print(indent_level + 1);
+    utils::printLine("Extended event linkage info", indent_level, '=');
 }

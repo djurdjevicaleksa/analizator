@@ -5,8 +5,8 @@
 #include <cstdint>
 #include <cstddef>
 
-#include "Descriptor.h"
-#include "DescriptorTemplatization.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 /*
     STD: The stuffing descriptor provides a means of invalidating previously
@@ -15,7 +15,7 @@
 
 namespace Descriptors {
 
-    class StuffingDescriptor: Descriptor {
+    class StuffingDescriptor: public Descriptor {
 
         std::unique_ptr<std::uint8_t[]> stuffing_bytes;
 
@@ -34,8 +34,12 @@ namespace Descriptors {
 
         void print(std::size_t) const override;
     };
+    
+    template<>
+    struct DerivedDescriptorFromTag<StuffingDescriptor::tag> {
+        using type = StuffingDescriptor;
+    };
 }
 
-template<> struct DerivedDescriptorFromTag<Descriptors::StuffingDescriptor::tag> { using type = Descriptors::StuffingDescriptor; };
 
 #endif // _STUFFING_DESCRIPTOR_H

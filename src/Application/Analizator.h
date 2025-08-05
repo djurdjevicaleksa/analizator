@@ -8,8 +8,8 @@
 #include "TSPacket.h"
 #include "NIT.h"
 #include "SDT.h"
-#include "PatPmtParser.h"
-#include "TSParser.h"
+#include "src/Application/Parsers/PatPmtParser.h"
+#include "src/Application/Parsers/TSParser.h"
 
 class Analizator {
 public:
@@ -27,8 +27,15 @@ private:
     TsPaketParser pat_pmt_parser; 
 
 public:
-    Analizator() = default;
     Analizator(const char*);
+    
+    Analizator() = default;
+    
+    Analizator(const Analizator&) = delete;
+    Analizator& operator=(const Analizator&) = delete;
+    
+    Analizator(Analizator&&) = default;
+    Analizator& operator=(Analizator&&) = default;
     ~Analizator() = default;
 
     inline void printTSPacket(size_t index) const {
@@ -49,7 +56,7 @@ public:
     }
 
     inline void printNIT(size_t index) const {
-        if (index < this->nit_tables.size()) this->nit_tables[index].print();
+        if (index < this->nit_tables.size()) this->nit_tables[index].print(1);
     };
 
     inline void printSDT(size_t index) const {

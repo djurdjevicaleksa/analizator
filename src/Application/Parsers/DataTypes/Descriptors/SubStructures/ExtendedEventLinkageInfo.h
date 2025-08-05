@@ -2,6 +2,7 @@
 #define _EXTENDED_EVENT_LINKAGE_INFO_H
 
 #include <cstdint>
+#include <cstddef>
 #include <optional>
 #include <vector>
 #include <string>
@@ -38,6 +39,7 @@ namespace SubStructs {
             ExtendedEventLinkageInfoEntry& operator=(ExtendedEventLinkageInfoEntry&&) = default;
             ~ExtendedEventLinkageInfoEntry() = default;
 
+            void print(std::size_t indent_level) const override;
             std::string deduceLinkType() const;
             std::string deduceTargetIdType() const;
         };
@@ -52,6 +54,7 @@ namespace SubStructs {
         ExtendedEventLinkageInfo& operator=(ExtendedEventLinkageInfo&&) = default;
         ~ExtendedEventLinkageInfo() = default;
 
+        void print(std::size_t indent_level) const;
         std::uint8_t getLoopLength() const {
             return loop_length;
         }

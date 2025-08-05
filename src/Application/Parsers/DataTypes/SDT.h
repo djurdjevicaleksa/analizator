@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "Descriptor.h"
+#include "Descriptors/Descriptor.h"
 
 struct ServiceDescriptionSection {
     struct PacketHeader {
@@ -28,7 +28,7 @@ struct ServiceDescriptionSection {
         uint8_t running_status;
         bool free_ca_mode;
         uint16_t descriptors_loop_length;
-        std::vector<Descriptor> descriptors;
+        std::vector<Descriptors::Descriptor> descriptors;
 
         void print() const;
     };
@@ -37,8 +37,8 @@ struct ServiceDescriptionSection {
     std::vector<Service> services;
     uint32_t crc;
 
-    void print() const;
     static std::string getDescriptorTypeFromTag(uint8_t);
+    void print() const;
 };
 
 #endif // _SDT_H

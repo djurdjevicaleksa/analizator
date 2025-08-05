@@ -1,0 +1,10 @@
+cc_library(
+    name = "Descriptors",
+    srcs = glob(["*.cpp"]),
+    hdrs = glob(["*.h"]),
+    deps = [
+        "//src/Application/Parsers/DataTypes/Descriptors/SubStructures:SubStructures",
+        "//src/Application/Utilities:Utilities"
+    ],
+    visibility = ["//src/Application/Parsers/DataTypes:__pkg__"]
+)

@@ -1,0 +1,7 @@
+cc_library(
+    name = "SubStructures",
+    srcs = glob(["*.cpp"]),
+    hdrs = glob(["*.h"]),
+    deps = ["//src/Application/Utilities:Utilities"],
+    visibility = ["//src/Application/Parsers/DataTypes/Descriptors:__pkg__"],
+)

@@ -1,18 +1,18 @@
 #ifndef _APPLICATION_H
 #define _APPLICATION_H
 
-#include <QtCore/QString>
-#include <QtCore/QDir>
-#include <QtCore/QFileInfo>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QListWidget>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QTextEdit>
-#include <QtWidgets/QListWidgetItem>
+#include <QtCore/qstring.h>
+#include "QtCore/qdir.h"
+#include "QtCore/qfileinfo.h"
+#include "QtWidgets/qapplication.h"
+#include "QtWidgets/qmainwindow.h"
+#include "QtWidgets/qboxlayout.h"
+#include "QtWidgets/qlabel.h"
+#include "QtWidgets/qpushbutton.h"
+#include "QtWidgets/qlistwidget.h"
+#include "QtWidgets/qboxlayout.h"
+#include "QtWidgets/qtextedit.h"
+#include "QtWidgets/qlistwidget.h"
 
 #include <sstream>
 #include <iostream>

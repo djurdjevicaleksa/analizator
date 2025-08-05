@@ -5,12 +5,12 @@
 #include <cstddef>
 #include <string>
 
-#include "Descriptor.h" 
-#include "DescriptorTemplatization.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h" 
 
 namespace Descriptors {
 
-    class TerrestrialDeliverySystemDescriptor: Descriptor {
+    class TerrestrialDeliverySystemDescriptor: public Descriptor {
 
         std::uint32_t centre_frequency;
         std::uint8_t bandwidth;
@@ -33,6 +33,8 @@ namespace Descriptors {
         TerrestrialDeliverySystemDescriptor(TerrestrialDeliverySystemDescriptor&&) = default;
         TerrestrialDeliverySystemDescriptor& operator=(TerrestrialDeliverySystemDescriptor&&) = default;
         ~TerrestrialDeliverySystemDescriptor() = default;        
+
+        void print(std::size_t indent_level) const;
 
         inline std::uint64_t deduceCentreFrequencyHz() const {
             return static_cast<std::uint64_t>(this->centre_frequency) * 10;
@@ -62,8 +64,12 @@ namespace Descriptors {
         std::string deduceGuardInterval() const;
         std::string deduceTransmissionMode() const;
     };
+    
+    template<>
+    struct DerivedDescriptorFromTag<TerrestrialDeliverySystemDescriptor::tag> {
+        using type = TerrestrialDeliverySystemDescriptor;
+    };
 }
 
-template<> struct DerivedDescriptorFromTag<Descriptors::TerrestrialDeliverySystemDescriptor::tag> { using type = Descriptors::TerrestrialDeliverySystemDescriptor; };
 
 #endif // _TERRESTRIAL_DELIVERY_SYSTEM_DESCRIPTOR_H

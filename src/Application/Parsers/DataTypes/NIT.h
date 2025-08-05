@@ -2,43 +2,49 @@
 #define _NIT_H
 
 #include <cstdint>
+#include <cstddef>
 #include <vector>
+#include <memory>
+#include <optional>
 
-#include "TSPacket.h"
-#include "Descriptor.h"
+#include "src/Application/Parsers/DataTypes/PSITableHeader.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 struct NetworkInformationSection {
-    struct PacketHeader {
-        uint8_t table_id;
-        bool section_syntax_indicator;
-        uint16_t section_length;
-        uint16_t network_id;
-        uint8_t version_number;
-        bool current_next_indicator;
-        uint8_t section_number;
-        uint8_t last_section_number;
-        uint16_t network_descriptors_length;
-        uint16_t transport_stream_loop_length;
-
-        void print() const;
-    };
-    
     struct TSLoopEntry {
         uint16_t tsid;
         uint16_t onid;
-        uint16_t length;
-        std::vector<Descriptor> descriptors;
+        uint16_t descriptors_length;
+        std::vector<std::unique_ptr<Descriptors::Descriptor>> descriptors;
 
-        TSLoopEntry(uint16_t ts, uint16_t on, uint16_t len, std::vector<Descriptor>& desc) : tsid(ts), onid(on), length(len), descriptors(std::move(desc)) {}
-        void print() const;
+        TSLoopEntry(const std::uint8_t* start);
+
+        TSLoopEntry() = delete;
+        TSLoopEntry(TSLoopEntry&) = delete;
+        TSLoopEntry& operator=(TSLoopEntry&) = delete;
+
+        void print(std::size_t indent_level) const;
     };
-    
-    PacketHeader header;    
-    std::vector<Descriptor> network_descriptors;
-    std::vector<TSLoopEntry> ts_loop_entries;
+        
+    PSITableHeader header;
+    std::optional<PSITableLongHeader> long_header;
+    std::uint16_t network_descriptors_length;
+    std::vector<std::unique_ptr<Descriptors::Descriptor>> network_descriptors;
+    std::uint16_t transport_stream_loop_length;
+    std::vector<std::unique_ptr<TSLoopEntry>> ts_loop_entries;
     uint32_t crc;
 
-    void print() const;
+    NetworkInformationSection(const std::uint8_t* start);
+
+    NetworkInformationSection() = delete;
+    NetworkInformationSection(NetworkInformationSection&) = delete;
+    NetworkInformationSection& operator=(NetworkInformationSection&) = delete;
+
+    NetworkInformationSection(NetworkInformationSection&&) = default;
+    NetworkInformationSection& operator=(NetworkInformationSection&&) = default;
+    ~NetworkInformationSection() = default;
+
+    void print(std::size_t indent_level) const;
     static std::string getDescriptorTypeFromTag(uint8_t);
 };
 

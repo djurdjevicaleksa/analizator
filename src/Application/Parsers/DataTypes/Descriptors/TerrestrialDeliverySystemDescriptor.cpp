@@ -2,8 +2,17 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "TerrestrialDeliverySystemDescriptor.h"
-#include "Utils.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFactory.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/TerrestrialDeliverySystemDescriptor.h"
+
+#include "src/Application/Utilities/Utils.h"
+
+namespace {
+    const bool registered = Descriptors::DescriptorFactory::instance().registerFactory(
+        Descriptors::TerrestrialDeliverySystemDescriptor::tag,
+        &Descriptors::create<Descriptors::TerrestrialDeliverySystemDescriptor::tag>
+    );
+}
 
 Descriptors::TerrestrialDeliverySystemDescriptor::TerrestrialDeliverySystemDescriptor(std::size_t len, const std::uint8_t* start)
     : Descriptor(len) {
@@ -100,6 +109,7 @@ std::string Descriptors::TerrestrialDeliverySystemDescriptor::deduceGuardInterva
         case 1: return "1/16";
         case 2: return "1/8";
         case 3: return "1/4";
+        default: throw std::runtime_error("[TerrestrialDeliverySystemDescriptor] Failed to deduce the guard interval: Invalid guard interval bitfield value.");
     }
 }
 
@@ -109,5 +119,25 @@ std::string Descriptors::TerrestrialDeliverySystemDescriptor::deduceTransmission
         case 1: return "8K mode";
         case 2: return "4K mode";
         case 3: return "Reserved for future use";
+        default: throw std::runtime_error("[TerrestrialDeliverySystemDescriptor] Failed to deduce the transmission mode: Invalid transmission mode bitfield value.");
     }
+}
+
+void Descriptors::TerrestrialDeliverySystemDescriptor::print(std::size_t indent_level) const {
+
+    utils::printLine("Terrestrial delivery system descriptor", indent_level, '=');
+    utils::printDataPoint("Centre frequency", this->centre_frequency, indent_level, std::to_string(this->deduceCentreFrequencyGHz()));
+    utils::printDataPoint("Bandwidth", this->bandwidth, indent_level, this->deduceBandwidth());
+    utils::printDataPoint("Priority", this->priority, indent_level, this->deducePriority());
+    utils::printDataPoint("Time slicing indicator", this->time_slicing_indicator, indent_level);
+    utils::printDataPoint("MPE FEC indicator", this->mpe_fec_indicator, indent_level);
+    utils::printDataPoint("Bandwidth", this->bandwidth, indent_level, this->deduceBandwidth());
+    utils::printDataPoint("Constellation", this->constellation, indent_level, this->deduceConstellationPattern());
+    utils::printDataPoint("Hierarchy information", this->hierarchy_information, indent_level, this->deduceHierarchyInformation());
+    utils::printDataPoint("Code rate - High priority stream", this->code_rate_hp_stream, indent_level, this->deduceCodeRate());
+    utils::printDataPoint("Code rate - Low priority stream", this->code_rate_lp_stream, indent_level);
+    utils::printDataPoint("Guard interval", this->guard_interval, indent_level, this->deduceGuardInterval());
+    utils::printDataPoint("Transmission mode", this->transmission_mode, indent_level, this->deduceTransmissionMode());
+    utils::printDataPoint("Other frequency flag", this->other_frequency_flag, indent_level);
+    utils::printLine("Terrestrial delivery system descriptor", indent_level, '=');
 }

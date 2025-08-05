@@ -5,12 +5,12 @@
 #include <cstddef>
 #include <string>
 
-#include "Descriptor.h"
-#include "DescriptorTemplatization.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 namespace Descriptors {
 
-    class SatelliteDeliverySystemDescriptor: Descriptor {
+    class SatelliteDeliverySystemDescriptor: public Descriptor {
         
         std::uint32_t frequency;
         std::uint16_t orbital_position;
@@ -32,6 +32,7 @@ namespace Descriptors {
         ~SatelliteDeliverySystemDescriptor() = default;
 
         void print(std::size_t indent_level) const override;
+        
         double deduceFrequencyGHz() const;
         float deduceOrbitalPositionInDegrees() const;
         char deduceWestEast() const;
@@ -42,8 +43,12 @@ namespace Descriptors {
         double deduceSymbolRate() const;
         std::string deduceFECScheme() const;
     };
+    
+    template<>
+    struct DerivedDescriptorFromTag<SatelliteDeliverySystemDescriptor::tag> {
+        using type = SatelliteDeliverySystemDescriptor;
+    };
 }
 
-template<> struct DerivedDescriptorFromTag<Descriptors::SatelliteDeliverySystemDescriptor::tag> { using type = Descriptors::SatelliteDeliverySystemDescriptor; };
 
 #endif // _SATELLITE_DELIVERY_SYSTEM_DESCRIPTOR_H

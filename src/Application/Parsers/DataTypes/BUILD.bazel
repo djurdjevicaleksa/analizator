@@ -1,0 +1,17 @@
+cc_library(
+    name = "DataTypes",
+    srcs = [
+        "NIT.cpp",
+        "SDT.cpp",
+        "PSITableHeader.cpp"
+    ],
+    hdrs = [
+        "NIT.h",
+        "SDT.h",
+        "TSPacket.h",
+        "PSITableHeader.h"
+    ],
+    includes = ["."],
+    deps = ["//src/Application/Parsers/DataTypes/Descriptors:Descriptors"],
+    visibility = ["//src/Application:__subpackages__"]
+)

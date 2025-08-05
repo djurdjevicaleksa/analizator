@@ -6,7 +6,7 @@
 #include <vector>
 #include <unordered_map>
 #include <iostream>
-#include "../include/TSPacket.h"
+#include "TSPacket.h"
 
 constexpr int TS_PACKET_SIZE = 188;
 constexpr int MAX_SECTION_SIZE = 4096;

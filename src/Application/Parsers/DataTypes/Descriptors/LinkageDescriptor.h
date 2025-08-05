@@ -7,15 +7,16 @@
 #include <optional>
 #include <string>
 
-#include "Descriptor.h"
-#include "DescriptorTemplatization.h"
-#include "MobileHandOverLinkage.h"
-#include "EventLinkageInfo.h"
-#include "ExtendedEventLinkageInfo.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
+
+#include "src/Application/Parsers/DataTypes/Descriptors/SubStructures/MobileHandOverLinkage.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/SubStructures/EventLinkageInfo.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/SubStructures/ExtendedEventLinkageInfo.h"
 
 namespace Descriptors {
 
-    class LinkageDescriptor: Descriptor {
+    class LinkageDescriptor: public Descriptor {
 
         std::uint16_t transport_stream_id;
         std::uint16_t original_network_id;
@@ -37,10 +38,15 @@ namespace Descriptors {
         LinkageDescriptor& operator=(LinkageDescriptor&&) = default;
         ~LinkageDescriptor() = default;
 
+        void print(std::size_t indent_size) const override;
         std::string deduceLinkageType() const;
+    };
+    
+    template<>
+    struct DerivedDescriptorFromTag<LinkageDescriptor::tag> {
+        using type = LinkageDescriptor;
     };
 }
 
-template<> struct DerivedDescriptorFromTag<Descriptors::LinkageDescriptor::tag> { using type = Descriptors::LinkageDescriptor; };
 
 #endif // _LINKAGE_DESCRIPTOR_H

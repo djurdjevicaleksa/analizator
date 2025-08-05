@@ -1,7 +1,9 @@
 #include <cstdint>
+#include <cstddef>
 #include <optional>
 
 #include "MobileHandOverLinkage.h"
+#include "src/Application/Utilities/Utils.h"
 
 SubStructs::MobileHandOverLinkage::MobileHandOverLinkage(const std::uint8_t* start) {
     this->hand_over_type = (start[0] >> 4) && 0b1111;
@@ -36,4 +38,13 @@ std::string SubStructs::MobileHandOverLinkage::deduceHandOverType() const {
 
 std::string SubStructs::MobileHandOverLinkage::deduceOriginType() const {
     return this->origin_type == 0? "NIT" : "SDT";
+}
+
+void SubStructs::MobileHandOverLinkage::print(std::size_t indent_level) const {
+    utils::printLine("Mobile hand-over linkage", indent_level, '=');
+    utils::printDataPoint("Hand-over type", this->hand_over_type, indent_level, this->deduceHandOverType());
+    utils::printDataPoint("Origin type", this->origin_type, indent_level, this->deduceOriginType());
+    if (this->network_id.has_value()) utils::printDataPoint("Network ID", this->network_id.value(), indent_level);
+    if (this->initial_service_id.has_value()) utils::printDataPoint("Initial service ID", this->initial_service_id.value(), indent_level);
+    utils::printLine("Mobile hand-over linkage", indent_level, '=');
 }

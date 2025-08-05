@@ -1,7 +1,16 @@
 #include <cstddef>
 
-#include "NetworkNameDescriptor.h"
-#include "Utils.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFactory.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/NetworkNameDescriptor.h"
+
+#include "src/Application/Utilities/Utils.h"
+
+namespace {
+    const bool registered = Descriptors::DescriptorFactory::instance().registerFactory(
+        Descriptors::NetworkNameDescriptor::tag,
+        &Descriptors::create<Descriptors::NetworkNameDescriptor::tag>
+    );
+}
 
 void Descriptors::NetworkNameDescriptor::print(std::size_t indent_level) const {
     utils::printLine("Network name descriptor", indent_level, '=');

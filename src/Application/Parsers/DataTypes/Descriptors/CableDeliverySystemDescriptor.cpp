@@ -1,8 +1,17 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "CableDeliverySystemDescriptor.h"
-#include "Utils.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFactory.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/CableDeliverySystemDescriptor.h"
+
+#include "src/Application/Utilities/Utils.h"
+
+namespace {
+    const bool registered = Descriptors::DescriptorFactory::instance().registerFactory(
+        Descriptors::CableDeliverySystemDescriptor::tag,
+        &Descriptors::create<Descriptors::CableDeliverySystemDescriptor::tag>
+    );
+}
 
 Descriptors::CableDeliverySystemDescriptor::CableDeliverySystemDescriptor(std::size_t length, const std::uint8_t* start)
     : Descriptors::Descriptor(length) {
@@ -78,4 +87,16 @@ std::string Descriptors::CableDeliverySystemDescriptor::deduceFECInnerScheme() c
         case 15: return "no convolutional coding";
         default: return "Reserved for future use";
     }
+}
+
+void Descriptors::CableDeliverySystemDescriptor::print(std::size_t indent_level) const {
+    utils::printLine("Cable delivery system descriptor", indent_level, '=');
+    utils::printDataPoint("Descriptor tag", this->tag, indent_level);
+    utils::printDataPoint("Descriptor length", this->length, indent_level);
+    utils::printDataPoint("Frequency", this->frequency, indent_level, std::to_string(this->deduceFrequency()));
+    utils::printDataPoint("FEC outer", this->fec_outer, indent_level, this->deduceFECOuterScheme());
+    utils::printDataPoint("Modulation", this->modulation, indent_level, this->deduceModulationScheme());
+    utils::printDataPoint("Symbol rate", this->symbol_rate, indent_level, std::to_string(this->deduceSymbolRate()));
+    utils::printDataPoint("FEC inner", this->fec_inner, indent_level, this->deduceFECInnerScheme());
+    utils::printLine("Cable delivery system descriptor", indent_level, '=');
 }

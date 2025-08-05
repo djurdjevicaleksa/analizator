@@ -1,6 +1,16 @@
 cc_binary(
     name = "DVB-Analizator",
     srcs = ["main.cpp"],
-    deps = ["//src/Application:Application"],
-    cxxopts = ["-Wall", "-Wextra", "-std=c++17"]
+    deps = [
+        "//src/Application:Application",
+        "//third_party/qt:qt",
+    ],
+    cxxopts = ["-Wall", "-Wextra", "-std=c++17", "-g"],
+    linkopts = [
+        "-lQt5Core",
+        "-lQt5Gui",
+        "-lQt5Widgets",
+        "-lpcre2-16",
+        "-lglib-2.0",
+    ]
 )

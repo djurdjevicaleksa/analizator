@@ -2,7 +2,7 @@
 #define _EVENT_LINKAGE_INFO_H
 
 #include <cstdint>
-
+#include <cstddef>
 
 namespace SubStructs {
 
@@ -28,6 +28,8 @@ namespace SubStructs {
         EventLinkageInfo(EventLinkageInfo&&) = default;
         EventLinkageInfo& operator=(EventLinkageInfo&&) = default;
         ~EventLinkageInfo() = default;
+
+        virtual void print(std::size_t indent_level) const;
     };
 }
 

@@ -24,6 +24,7 @@ namespace Descriptors {
         Descriptor(Descriptor&&) = default;
         virtual ~Descriptor() = default;
         
+        std::size_t getlength() const { return this->length; }
         virtual void print(std::size_t) const;
     };
 }

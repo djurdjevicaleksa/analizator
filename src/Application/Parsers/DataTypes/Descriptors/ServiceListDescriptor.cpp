@@ -1,8 +1,17 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "ServiceListDescriptor.h"
-#include "Utils.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFactory.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/ServiceListDescriptor.h"
+
+#include "src/Application/Utilities/Utils.h"
+
+namespace {
+    const bool registered = Descriptors::DescriptorFactory::instance().registerFactory(
+        Descriptors::ServiceListDescriptor::tag,
+        &Descriptors::create<Descriptors::ServiceListDescriptor::tag>
+    );
+}
 
 Descriptors::ServiceListDescriptor::ServiceListDescriptor(std::uint8_t len, const std::uint8_t* list_start) : Descriptors::Descriptor(len) {
             

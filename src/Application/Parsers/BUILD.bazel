@@ -1,0 +1,22 @@
+cc_library(
+    name = "Parsers",
+    srcs = [
+        "NITParser.cpp",
+        "PatPmtParser.cpp",
+        "PSIPacketAssembler.cpp",
+        "SDTParser.cpp",
+        "TSParser.cpp"
+    ],
+    hdrs = [
+        "NITParser.h",
+        "PatPmtParser.h",
+        "PSIPacketAssembler.h",
+        "SDTParser.h",
+        "TSParser.h",
+    ],
+    deps = [
+        "//src/Application/Parsers/DataTypes:DataTypes",
+        "//src/Application/Utilities:Utilities"
+    ],
+    visibility = ["//src/Application:__pkg__"]
+)

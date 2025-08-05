@@ -31,6 +31,7 @@ namespace SubStructs {
         MobileHandOverLinkage& operator=(MobileHandOverLinkage&&) = default;
         ~MobileHandOverLinkage() = default;
 
+        void print(std::size_t indent_level) const;
         std::string deduceHandOverType() const;
         std::string deduceOriginType() const;
     };

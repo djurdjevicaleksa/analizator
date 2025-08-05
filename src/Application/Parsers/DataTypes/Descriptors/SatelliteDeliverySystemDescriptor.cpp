@@ -1,7 +1,16 @@
 
 
-#include "SatelliteDeliverySystemDescriptor.h"
-#include "Utils.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFactory.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/SatelliteDeliverySystemDescriptor.h"
+
+#include "src/Application/Utilities/Utils.h"
+
+namespace {
+    const bool registered = Descriptors::DescriptorFactory::instance().registerFactory(
+        Descriptors::SatelliteDeliverySystemDescriptor::tag,
+        &Descriptors::create<Descriptors::SatelliteDeliverySystemDescriptor::tag>
+    );
+}
 
 Descriptors::SatelliteDeliverySystemDescriptor::SatelliteDeliverySystemDescriptor(std::size_t length, const std::uint8_t* start)
     : Descriptors::Descriptor(length) {
@@ -19,7 +28,17 @@ Descriptors::SatelliteDeliverySystemDescriptor::SatelliteDeliverySystemDescripto
 
 void Descriptors::SatelliteDeliverySystemDescriptor::print(std::size_t indent_level) const {
 
-    std::cout << "Decided to skip printing SsatelliteDeliverySystemDescriptors." << std::endl;
+    utils::printLine("Satellite delivery system descriptor", indent_level, '=');
+    utils::printDataPoint("Frequency", this->frequency, indent_level, std::to_string(this->deduceFrequencyGHz()));
+    utils::printDataPoint("Orbital position", this->orbital_position, indent_level, std::to_string(this->deduceOrbitalPositionInDegrees()));
+    utils::printDataPoint("West/East flag", this->west_east_flag, indent_level, std::to_string(this->deduceWestEast()));
+    utils::printDataPoint("Polarization", this->polarization, indent_level, this->deducePolarization());
+    utils::printDataPoint("Roll-off", this->roll_off, indent_level, std::to_string(this->deduceRollOff()));
+    utils::printDataPoint("Modulation system", this->modulation_system, indent_level, this->deduceModulationSystem());
+    utils::printDataPoint("Modulation type", this->modulation_type, indent_level, this->deduceModulationType());
+    utils::printDataPoint("Symbol rate", this->symbol_rate, indent_level, std::to_string(this->deduceSymbolRate()));
+    utils::printDataPoint("FEC inner", this->fec_inner, indent_level, this->deduceFECScheme());
+    utils::printLine("Satellite delivery system descriptor", indent_level, '=');
 }
 
 double Descriptors::SatelliteDeliverySystemDescriptor::deduceFrequencyGHz() const {
@@ -87,6 +106,7 @@ std::string Descriptors::SatelliteDeliverySystemDescriptor::deduceModulationType
         case 1: return "QPSK";
         case 2: return "8PSK";
         case 3: return this->modulation_system == 0? "16-QAM" : "N/A";
+        default: throw std::runtime_error("[SatelliteDeliverySystemDescriptor] Failed to deduce the modulation type: Invalid modulation type bitfield value.");
     }
 }
 

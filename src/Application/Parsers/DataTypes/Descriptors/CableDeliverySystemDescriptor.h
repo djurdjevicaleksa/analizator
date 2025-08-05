@@ -5,12 +5,12 @@
 #include <cstddef>
 #include <string>
 
-#include "Descriptor.h"
-#include "DescriptorTemplatization.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 namespace Descriptors {
 
-    class CableDeliverySystemDescriptor: Descriptor {
+    class CableDeliverySystemDescriptor: public Descriptor {
 
         std::uint32_t frequency;
         std::uint8_t fec_outer;
@@ -27,14 +27,20 @@ namespace Descriptors {
         CableDeliverySystemDescriptor& operator=(CableDeliverySystemDescriptor&&) = default;
         ~CableDeliverySystemDescriptor() = default;
 
+        void print(std::size_t indent_level) const override;
+
         double deduceFrequency() const;
         std::string deduceFECOuterScheme() const;
         std::string deduceModulationScheme() const;
         double deduceSymbolRate() const;
         std::string deduceFECInnerScheme() const;
     };
+
+    template<> 
+    struct DerivedDescriptorFromTag<CableDeliverySystemDescriptor::tag> {
+        using type = CableDeliverySystemDescriptor;
+    };
 }
 
-template<> struct DerivedDescriptorFromTag<Descriptors::CableDeliverySystemDescriptor::tag> { using type = Descriptors::CableDeliverySystemDescriptor; };
 
 #endif // _CABLE_DELIVERY_SYSTEM_DESCRIPTOR_H

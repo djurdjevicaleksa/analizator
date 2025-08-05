@@ -1,0 +1,25 @@
+cc_library(
+    name = "Application",
+    srcs = [
+        "Application.cpp",
+        "Analizator.cpp",
+    ],
+    hdrs = [
+        "Application.h",
+        "Analizator.h"
+    ],
+    deps = [
+        "//src/Application/Parsers:Parsers",
+        "//src/Application/Utilities:Utilities",
+        "//src/Application/Parsers/DataTypes:DataTypes",
+        "//third_party/qt:qt",
+    ],
+    linkopts = [
+        "-lpthread",
+        "-ldl",
+        "-lX11",
+        "-lz",
+    ],
+    includes = ["."],
+    visibility = ["//src:__pkg__"]
+)

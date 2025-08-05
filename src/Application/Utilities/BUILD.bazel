@@ -1,0 +1,10 @@
+cc_library(
+    name = "Utilities",
+    srcs = [
+        "Utils.cpp"
+    ],
+    hdrs = [
+        "Utils.h"
+    ],
+    visibility = ["//src/Application:__subpackages__"]
+)

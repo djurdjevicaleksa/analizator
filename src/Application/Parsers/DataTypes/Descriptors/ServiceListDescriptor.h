@@ -7,8 +7,8 @@
 #include <cassert>
 #include <iostream>
 
-#include "Descriptor.h"
-#include "DescriptorTemplatization.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 /*
     STD: The service list descriptor provides a means of listing the services by service_id and service type.
@@ -16,9 +16,9 @@
 
 namespace Descriptors {
     
-    class ServiceListDescriptor : Descriptor {
+    class ServiceListDescriptor : public Descriptor {
         
-        struct __attribute__((packed)) ServiceIdentifier {
+        struct ServiceIdentifier {
             std::uint16_t service_id;
             std::uint8_t service_type;
             
@@ -27,6 +27,9 @@ namespace Descriptors {
             
             ServiceIdentifier(ServiceIdentifier&) = delete;
             ServiceIdentifier& operator=(ServiceIdentifier&) = delete;
+
+            ServiceIdentifier(ServiceIdentifier&&) = default;
+            ServiceIdentifier& operator=(ServiceIdentifier&&) = default;
 
             void print(std::size_t) const;
         };
@@ -46,8 +49,12 @@ namespace Descriptors {
         
         void print(std::size_t) const override;
     };
+    
+    template<>
+    struct DerivedDescriptorFromTag<ServiceListDescriptor::tag> {
+        using type = ServiceListDescriptor;
+    };
 }
 
-template<> struct DerivedDescriptorFromTag<Descriptors::ServiceListDescriptor::tag> {using type = Descriptors::ServiceListDescriptor; };
 
 #endif // _SERVICE_LIST_DESCRIPTOR_H
