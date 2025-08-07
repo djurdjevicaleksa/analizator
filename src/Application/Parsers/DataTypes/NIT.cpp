@@ -5,7 +5,7 @@
 
 #include "src/Application/Parsers/DataTypes/NIT.h"
 #include "src/Application/Utilities/Utils.h"
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFactory.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/Factory.h"
 
 NetworkInformationSection::NetworkInformationSection(const std::uint8_t* start) : header(start) {
 
@@ -29,10 +29,7 @@ NetworkInformationSection::NetworkInformationSection(const std::uint8_t* start) 
         std::uint8_t tag = moving_ptr[0];
         std::uint8_t length = moving_ptr[1];
 
-        this->network_descriptors.emplace_back(Descriptors::DescriptorFactory::instance().make(
-            tag, length, &moving_ptr[2]
-        ));
-
+        this->network_descriptors.emplace_back(Factory::create(tag, length, &moving_ptr[2]));
         moving_ptr += 2 + length;
     }
 
@@ -75,10 +72,7 @@ NetworkInformationSection::TSLoopEntry::TSLoopEntry(const std::uint8_t* start) {
         std::uint8_t tag = moving_ptr[0];
         std::uint8_t length = moving_ptr[1];
 
-        this->descriptors.emplace_back(Descriptors::DescriptorFactory::instance().make(
-            tag, length, &moving_ptr[2]
-        ));
-
+        this->descriptors.emplace_back(Factory::create(tag, length, &moving_ptr[2]));
         moving_ptr += 2 + length;
     }
 }

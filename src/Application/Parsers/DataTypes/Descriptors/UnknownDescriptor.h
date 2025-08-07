@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <cstddef>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
+#include "src/Application/Utilities/Utils.h"
 
 namespace Descriptors {
 
@@ -18,7 +18,14 @@ namespace Descriptors {
 
         UnknownDescriptor(const UnknownDescriptor&) = default;
         UnknownDescriptor& operator=(UnknownDescriptor&&) = default;
-        ~UnknownDescriptor() = default;
+        ~UnknownDescriptor() override = default;
+
+        void print(std::size_t indent_level) const override {
+            utils::printLine("Unknown descriptor", indent_level, '=');
+            utils::printDataPoint("Descriptor tag", this->tag, indent_level);
+            utils::printDataPoint("Descriptor length", this->length, indent_level);
+            utils::printLine("Unknown descriptor", indent_level, '=');
+        }
     };
 } // namespace Descriptors
 

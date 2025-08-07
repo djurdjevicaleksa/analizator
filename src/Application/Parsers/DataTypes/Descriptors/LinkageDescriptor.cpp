@@ -3,16 +3,12 @@
 #include <optional>
 #include <memory>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFactory.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/LinkageDescriptor.h"
+#include "src/Application/Parsers/DataTypes/Descriptors/Registrar.h"
 #include "src/Application/Utilities/Utils.h"
 
-namespace {
-    const bool registered = Descriptors::DescriptorFactory::instance().registerFactory(
-        Descriptors::LinkageDescriptor::tag,
-        &Descriptors::create<Descriptors::LinkageDescriptor::tag>
-    );
-}
+const std::uint8_t Descriptors::LinkageDescriptor::tag = 0x4A; 
+static Registrar<Descriptors::LinkageDescriptor> linkage_descriptor_registrar{ Descriptors::LinkageDescriptor::tag };
 
 Descriptors::LinkageDescriptor::LinkageDescriptor(std::size_t length, const std::uint8_t* start) 
     : Descriptor(length) {

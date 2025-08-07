@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <cstddef>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 /*
@@ -20,7 +19,7 @@ namespace Descriptors {
         std::unique_ptr<std::uint8_t[]> stuffing_bytes;
 
     public:
-        static constexpr std::uint8_t tag = 0x42;
+        static const std::uint8_t tag;
         
         StuffingDescriptor(std::size_t len, const std::uint8_t* start)
             : Descriptor(len), stuffing_bytes(std::make_unique<std::uint8_t[]>(len)) {
@@ -33,11 +32,6 @@ namespace Descriptors {
         ~StuffingDescriptor() = default;
 
         void print(std::size_t) const override;
-    };
-    
-    template<>
-    struct DerivedDescriptorFromTag<StuffingDescriptor::tag> {
-        using type = StuffingDescriptor;
     };
 }
 

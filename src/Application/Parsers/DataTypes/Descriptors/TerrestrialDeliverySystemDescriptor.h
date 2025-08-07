@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <string>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h" 
 
 namespace Descriptors {
@@ -26,7 +25,7 @@ namespace Descriptors {
         bool other_frequency_flag;
 
     public:
-        static constexpr std::uint8_t tag = 0x5A;
+        static const std::uint8_t tag;
 
         TerrestrialDeliverySystemDescriptor(std::size_t len, const std::uint8_t* start);
 
@@ -63,11 +62,6 @@ namespace Descriptors {
         std::string deduceCodeRate() const;
         std::string deduceGuardInterval() const;
         std::string deduceTransmissionMode() const;
-    };
-    
-    template<>
-    struct DerivedDescriptorFromTag<TerrestrialDeliverySystemDescriptor::tag> {
-        using type = TerrestrialDeliverySystemDescriptor;
     };
 }
 

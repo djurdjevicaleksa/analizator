@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 #include "src/Application/Parsers/DataTypes/Descriptors/SubStructures/MobileHandOverLinkage.h"
@@ -30,7 +29,7 @@ namespace Descriptors {
         std::unique_ptr<std::uint8_t[]> private_data;
 
     public:
-        static constexpr std::uint8_t tag = 0x4A;
+        static const std::uint8_t tag;
 
         LinkageDescriptor(std::size_t length, const std::uint8_t* start);
 
@@ -40,11 +39,6 @@ namespace Descriptors {
 
         void print(std::size_t indent_size) const override;
         std::string deduceLinkageType() const;
-    };
-    
-    template<>
-    struct DerivedDescriptorFromTag<LinkageDescriptor::tag> {
-        using type = LinkageDescriptor;
     };
 }
 

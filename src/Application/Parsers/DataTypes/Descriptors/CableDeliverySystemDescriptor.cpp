@@ -1,17 +1,12 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFactory.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/CableDeliverySystemDescriptor.h"
-
+#include "src/Application/Parsers/DataTypes/Descriptors/Registrar.h"
 #include "src/Application/Utilities/Utils.h"
 
-namespace {
-    const bool registered = Descriptors::DescriptorFactory::instance().registerFactory(
-        Descriptors::CableDeliverySystemDescriptor::tag,
-        &Descriptors::create<Descriptors::CableDeliverySystemDescriptor::tag>
-    );
-}
+const std::uint8_t Descriptors::CableDeliverySystemDescriptor::tag = 0x44;
+static Registrar<Descriptors::CableDeliverySystemDescriptor> cable_delivery_system_descriptor_registrar{ Descriptors::CableDeliverySystemDescriptor::tag };
 
 Descriptors::CableDeliverySystemDescriptor::CableDeliverySystemDescriptor(std::size_t length, const std::uint8_t* start)
     : Descriptors::Descriptor(length) {

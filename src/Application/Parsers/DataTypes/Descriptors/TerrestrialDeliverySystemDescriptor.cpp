@@ -2,17 +2,12 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFactory.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/TerrestrialDeliverySystemDescriptor.h"
-
+#include "src/Application/Parsers/DataTypes/Descriptors/Registrar.h"
 #include "src/Application/Utilities/Utils.h"
 
-namespace {
-    const bool registered = Descriptors::DescriptorFactory::instance().registerFactory(
-        Descriptors::TerrestrialDeliverySystemDescriptor::tag,
-        &Descriptors::create<Descriptors::TerrestrialDeliverySystemDescriptor::tag>
-    );
-}
+const std::uint8_t Descriptors::TerrestrialDeliverySystemDescriptor::tag = 0x5A;
+static Registrar<Descriptors::TerrestrialDeliverySystemDescriptor> terrestrial_delivery_system_descriptor_registrar{ Descriptors::TerrestrialDeliverySystemDescriptor::tag };
 
 Descriptors::TerrestrialDeliverySystemDescriptor::TerrestrialDeliverySystemDescriptor(std::size_t len, const std::uint8_t* start)
     : Descriptor(len) {

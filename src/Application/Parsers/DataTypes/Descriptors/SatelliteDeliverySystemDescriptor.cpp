@@ -1,16 +1,12 @@
+#include <cstddef>
+#include <cstdint>
 
-
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFactory.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/SatelliteDeliverySystemDescriptor.h"
-
+#include "src/Application/Parsers/DataTypes/Descriptors/Registrar.h"
 #include "src/Application/Utilities/Utils.h"
 
-namespace {
-    const bool registered = Descriptors::DescriptorFactory::instance().registerFactory(
-        Descriptors::SatelliteDeliverySystemDescriptor::tag,
-        &Descriptors::create<Descriptors::SatelliteDeliverySystemDescriptor::tag>
-    );
-}
+const std::uint8_t Descriptors::SatelliteDeliverySystemDescriptor::tag = 0x43;
+static Registrar<Descriptors::SatelliteDeliverySystemDescriptor> satellite_delivery_system_descriptor_registrar{ Descriptors::SatelliteDeliverySystemDescriptor::tag };
 
 Descriptors::SatelliteDeliverySystemDescriptor::SatelliteDeliverySystemDescriptor(std::size_t length, const std::uint8_t* start)
     : Descriptors::Descriptor(length) {

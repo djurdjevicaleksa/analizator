@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <string>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 namespace Descriptors {
@@ -19,7 +18,8 @@ namespace Descriptors {
         std::uint8_t fec_inner;
 
     public:
-        static constexpr std::uint8_t tag = 0x44;
+
+        static const std::uint8_t tag;
 
         CableDeliverySystemDescriptor(std::size_t length, const std::uint8_t* start);
 
@@ -34,11 +34,6 @@ namespace Descriptors {
         std::string deduceModulationScheme() const;
         double deduceSymbolRate() const;
         std::string deduceFECInnerScheme() const;
-    };
-
-    template<> 
-    struct DerivedDescriptorFromTag<CableDeliverySystemDescriptor::tag> {
-        using type = CableDeliverySystemDescriptor;
     };
 }
 

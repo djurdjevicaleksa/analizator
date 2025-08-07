@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <string>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 namespace Descriptors {
@@ -23,7 +22,7 @@ namespace Descriptors {
         std::uint8_t fec_inner;
 
     public:
-        static constexpr std::uint8_t tag = 0x43;
+        static const std::uint8_t tag;
 
         SatelliteDeliverySystemDescriptor(std::size_t length, const std::uint8_t* start);
 
@@ -43,12 +42,6 @@ namespace Descriptors {
         double deduceSymbolRate() const;
         std::string deduceFECScheme() const;
     };
-    
-    template<>
-    struct DerivedDescriptorFromTag<SatelliteDeliverySystemDescriptor::tag> {
-        using type = SatelliteDeliverySystemDescriptor;
-    };
 }
-
 
 #endif // _SATELLITE_DELIVERY_SYSTEM_DESCRIPTOR_H

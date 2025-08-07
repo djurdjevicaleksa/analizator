@@ -13,7 +13,7 @@ namespace Descriptors {
     protected:
 
         std::size_t length;
-    
+        
     public:
         Descriptor(std::size_t len) : length(len) {}
 
@@ -25,7 +25,7 @@ namespace Descriptors {
         virtual ~Descriptor() = default;
         
         std::size_t getlength() const { return this->length; }
-        virtual void print(std::size_t) const;
+        virtual void print(std::size_t) const = 0;
     };
 }
 

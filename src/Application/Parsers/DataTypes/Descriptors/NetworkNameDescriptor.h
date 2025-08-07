@@ -6,7 +6,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 /*
@@ -20,7 +19,7 @@ namespace Descriptors {
         std::unique_ptr<std::uint8_t[]> data;
         
     public:
-        static constexpr std::uint8_t tag = 0x40;
+        static const std::uint8_t tag;
         
         NetworkNameDescriptor(std::size_t len, const std::uint8_t* start)
             : Descriptor(len), data(std::make_unique<std::uint8_t[]>(len)) {
@@ -33,11 +32,6 @@ namespace Descriptors {
         ~NetworkNameDescriptor() = default;
     
         void print(std::size_t indent_level) const override;
-    };
-    
-    template<>
-    struct DerivedDescriptorFromTag<NetworkNameDescriptor::tag> {
-        using type = NetworkNameDescriptor;
     };
 }
 

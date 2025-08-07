@@ -7,7 +7,6 @@
 #include <cassert>
 #include <iostream>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFallback.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/Descriptor.h"
 
 /*
@@ -39,7 +38,7 @@ namespace Descriptors {
         std::vector<ServiceIdentifier> service_list;
     
     public:
-        static constexpr uint8_t tag = 0x41;
+        static const uint8_t tag;
 
         ServiceListDescriptor(uint8_t len, const uint8_t* list_start);
 
@@ -48,11 +47,6 @@ namespace Descriptors {
         ~ServiceListDescriptor() = default;
         
         void print(std::size_t) const override;
-    };
-    
-    template<>
-    struct DerivedDescriptorFromTag<ServiceListDescriptor::tag> {
-        using type = ServiceListDescriptor;
     };
 }
 

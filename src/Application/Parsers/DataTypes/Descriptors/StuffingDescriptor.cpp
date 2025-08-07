@@ -1,16 +1,12 @@
 #include <cstddef>
+#include <cstdint>
 
-#include "src/Application/Parsers/DataTypes/Descriptors/DescriptorFactory.h"
 #include "src/Application/Parsers/DataTypes/Descriptors/StuffingDescriptor.h"
-
+#include "src/Application/Parsers/DataTypes/Descriptors/Registrar.h"
 #include "src/Application/Utilities/Utils.h"
 
-namespace {
-    const bool registered = Descriptors::DescriptorFactory::instance().registerFactory(
-        Descriptors::StuffingDescriptor::tag,
-        &Descriptors::create<Descriptors::StuffingDescriptor::tag>
-    );
-}
+const std::uint8_t Descriptors::StuffingDescriptor::tag = 0x42;
+static Registrar<Descriptors::StuffingDescriptor> stuffing_descriptor_registrar{ Descriptors::StuffingDescriptor::tag };
 
 void Descriptors::StuffingDescriptor::print(std::size_t indent_level) const {
     utils::printLine("Stuffing descriptor", indent_level, '=');

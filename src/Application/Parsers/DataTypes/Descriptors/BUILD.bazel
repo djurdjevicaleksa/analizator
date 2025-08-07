@@ -6,5 +6,6 @@ cc_library(
         "//src/Application/Parsers/DataTypes/Descriptors/SubStructures:SubStructures",
         "//src/Application/Utilities:Utilities"
     ],
-    visibility = ["//src/Application/Parsers/DataTypes:__pkg__"]
+    visibility = ["//src/Application/Parsers/DataTypes:__pkg__"],
+    alwayslink = True,
 )
