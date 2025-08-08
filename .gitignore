@@ -1,6 +1,8 @@
-ts/
-bin/
+bazel-analizator
+bazel-bin
+bazel-out
+bazel-testlogs
+MODULE.bazel.lock
 .vscode/
 dtv/
-third_party/qt-everywhere-src-5.15.11/*
-!third_party/qt-everywhere-src-5.15.11/.gitkeep
+**/*.ui
