@@ -3,21 +3,19 @@
 
 #include <vector>
 #include <unordered_map>
+#include <string>
+#include <cstdint>
 
 #include "TSPacket.h"
 
-class TSParser {
-    public:
-        TSParser() = default;
-        std::vector<TSPacket> parseTransportStream(const char* ts_file);
-        
-        int getPacketSize(const char* ts_file);
-        TSPacket parseTSPacket(const uint8_t* packet, int packet_size);
-
-        std::unordered_map<uint16_t, std::vector<TSPacket>> groupPacketsByPID(const std::vector<TSPacket>& ts_packets);
-        void printGroupedPackets(const std::unordered_map<uint16_t, std::vector<TSPacket>>& pid_groups, const std::unordered_map<uint16_t, std::string>& custom_pid_names);
-
-        const char* getPIDName(uint16_t pid, const std::unordered_map<uint16_t, std::string>& custom_pid_names);
-};
+namespace TS {
+    std::uint8_t getPacketSize(const char* input_file_name);
+    void parseTransportStream(const char* input_file_name, std::vector<TSPacket>& out);
+    std::string getNameByPID(std::uint16_t pid, const std::unordered_map<std::uint16_t, std::string>& user_defined_pid_names);
+    void printPacketGroups(
+        const std::unordered_map<std::uint16_t, std::vector<TSPacket*>>& grouped_packets,
+        const std::unordered_map<std::uint16_t, std::string>& user_defined_pid_names
+    );
+} // namespace TS
 
 #endif

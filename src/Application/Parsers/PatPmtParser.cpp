@@ -228,51 +228,51 @@ bool TsPaketParser::parsePMT(uint16_t pid, const std::vector<uint8_t>& section) 
 }
 
 bool TsPaketParser::parseFromGroupedPackets(const std::unordered_map<uint16_t, std::vector<TSPacket>>& grouped_packets) {
-    auto pat_it = grouped_packets.find(0x0000);
-    if (pat_it == grouped_packets.end()) return false;
+    // auto pat_it = grouped_packets.find(0x0000);
+    // if (pat_it == grouped_packets.end()) return false;
 
-    for (const auto& packet : pat_it->second) {
-        if (!packet.payload || packet.payload_length == 0) continue;
-        if (!packet.header.bf.payload_unit_start_indicator) continue;
+    // for (const auto& packet : pat_it->second) {
+    //     if (!packet.payload || packet.payload_length == 0) continue;
+    //     if (!packet.header.bf.payload_unit_start_indicator) continue;
 
-        uint8_t pointer_field = packet.payload[0];
-        if (pointer_field >= packet.payload_length) continue;
+    //     uint8_t pointer_field = packet.payload[0];
+    //     if (pointer_field >= packet.payload_length) continue;
 
-        const uint8_t* section_start = packet.payload + 1 + pointer_field;
-        int section_len = packet.payload_length - 1 - pointer_field;
+    //     const uint8_t* section_start = packet.payload + 1 + pointer_field;
+    //     int section_len = packet.payload_length - 1 - pointer_field;
 
-        std::vector<uint8_t> section(section_start, section_start + section_len);
+    //     std::vector<uint8_t> section(section_start, section_start + section_len);
 
-        if (parsePAT(section)) break;
-    }
+    //     if (parsePAT(section)) break;
+    // }
 
-    for (const auto& prog : programs) {
-        auto it = grouped_packets.find(prog.pmt_pid);
-        if (it == grouped_packets.end()) continue;
+    // for (const auto& prog : programs) {
+    //     auto it = grouped_packets.find(prog.pmt_pid);
+    //     if (it == grouped_packets.end()) continue;
 
-        ProgramInfo oldPMT = prog;
+    //     ProgramInfo oldPMT = prog;
 
-        for (const auto& packet : it->second) {
-            if (!packet.payload || packet.payload_length == 0) continue;
-            if (!packet.header.bf.payload_unit_start_indicator) continue;
+    //     for (const auto& packet : it->second) {
+    //         if (!packet.payload || packet.payload_length == 0) continue;
+    //         if (!packet.header.bf.payload_unit_start_indicator) continue;
 
-            uint8_t pointer_field = packet.payload[0];
-            if (pointer_field >= packet.payload_length) continue;
+    //         uint8_t pointer_field = packet.payload[0];
+    //         if (pointer_field >= packet.payload_length) continue;
 
-            const uint8_t* section_start = packet.payload + 1 + pointer_field;
-            int section_len = packet.payload_length - 1 - pointer_field;
+    //         const uint8_t* section_start = packet.payload + 1 + pointer_field;
+    //         int section_len = packet.payload_length - 1 - pointer_field;
 
-            std::vector<uint8_t> section(section_start, section_start + section_len);
+    //         std::vector<uint8_t> section(section_start, section_start + section_len);
 
-            if (parsePMT(prog.pmt_pid, section)){
-                comparePMTs(oldPMT, prog);
-                break;
-            }
+    //         if (parsePMT(prog.pmt_pid, section)){
+    //             comparePMTs(oldPMT, prog);
+    //             break;
+    //         }
 
-        }
-    }
+    //     }
+    // }
 
-    return isComplete();
+    // return isComplete();
 }
 
 bool TsPaketParser::isComplete() const {

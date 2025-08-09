@@ -3,7 +3,8 @@ cc_library(
     srcs = [
         "NIT.cpp",
         "SDT.cpp",
-        "PSITableHeader.cpp"
+        "PSITableHeader.cpp",
+        "TSPacket.cpp"
     ],
     hdrs = [
         "NIT.h",

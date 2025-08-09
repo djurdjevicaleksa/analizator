@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "src/Application/Parsers/DataTypes/TSPacket.h"
 
 Application::Application(int& argc, char**& argv) : qtApp(argc, argv) {}
 
@@ -26,7 +27,7 @@ void Application::showPIDs() {
     resetOutputContainer();
     if (!outputLayout || !outputDisplay) return;
 
-    if (this->analizator.grouped_ts_packets.size() == 0){
+    if (this->analizator.ts_by_pid.size() == 0){
         outputDisplay->setPlainText("U strimu nisu pronadjeni validni PID-ovi.");
         return;
     }
@@ -213,8 +214,19 @@ void Application::showPackets() {
     }
 
     QListWidget* listWidget = new QListWidget();
-    for (size_t i = 0; i < this->analizator.ts_packets.size(); ++i)
-        listWidget->addItem("TS paket #" + QString::number(i + 1));
+
+    for (std::size_t i = 0; i < this->analizator.ts_packets.size(); ++i) {
+        std::string packet_name = "TS Packet [" + std::to_string(i) + "]";
+
+        switch(this->analizator.ts_packets[i].getAdaptationFieldControl()) {
+            case 0: break;
+            case 1: packet_name += " (PLD)"; break;
+            case 2: packet_name += " (ADP)"; break;
+            case 3: packet_name += " (PLD, ADP)"; break;
+        }
+
+        listWidget->addItem(QString::fromStdString(packet_name));
+    }
 
     listWidget->setStyleSheet(
         "QListWidget {"

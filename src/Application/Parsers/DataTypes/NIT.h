@@ -23,6 +23,8 @@ struct NetworkInformationSection {
         TSLoopEntry(TSLoopEntry&) = delete;
         TSLoopEntry& operator=(TSLoopEntry&) = delete;
 
+        ~TSLoopEntry() = default;
+
         void print(std::size_t indent_level) const;
     };
         
@@ -45,7 +47,6 @@ struct NetworkInformationSection {
     ~NetworkInformationSection() = default;
 
     void print(std::size_t indent_level) const;
-    static std::string getDescriptorTypeFromTag(uint8_t);
 };
 
 #endif // _NIT_H

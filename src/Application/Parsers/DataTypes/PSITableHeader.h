@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <optional>
-
+#include <string>
 
 struct PSITableHeader {
     std::uint8_t table_id;
@@ -40,7 +40,7 @@ struct PSITableLongHeader {
     PSITableLongHeader& operator=(PSITableLongHeader&&) = default;
     ~PSITableLongHeader() = default;
 
-    void print(std::size_t indent_level) const;
+    void print(std::size_t indent_level, const std::string& table_id_extension_name) const;
 };
 
 #endif // _PSI_TABLE_HEADER_H

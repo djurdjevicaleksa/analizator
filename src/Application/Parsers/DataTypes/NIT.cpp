@@ -17,8 +17,8 @@ NetworkInformationSection::NetworkInformationSection(const std::uint8_t* start) 
     } else this->long_header = std::nullopt;
 
     this->network_descriptors_length = ((moving_ptr[0] & 0b1111) << 8) | moving_ptr[1];
-    
     moving_ptr += 2;
+    
     const std::uint8_t* network_descriptors_end = moving_ptr + this->network_descriptors_length;
     
     while(moving_ptr + 1 < network_descriptors_end) {
@@ -77,33 +77,6 @@ NetworkInformationSection::TSLoopEntry::TSLoopEntry(const std::uint8_t* start) {
     }
 }
 
-
-
-// std::string NetworkInformationSection::getDescriptorTypeFromTag(uint8_t tag) {
-//     switch (tag)
-//     {
-//         case 0x40: return std::string("network_name_descriptor");
-//         case 0x41: return std::string("service_list_descriptor");
-//         case 0x42: return std::string("stuffing_descriptor");
-//         case 0x43: return std::string("satellite_delivery_system_descriptor");
-//         case 0x44: return std::string("cable_delivery_system_descriptor");
-//         case 0x4A: return std::string("linkage_descriptor");
-//         case 0x5A: return std::string("terrestrial_delivery_system_descriptor");
-//         case 0x5B: return std::string("multilingual_network_name_descriptor");
-//         case 0x5F: return std::string("private_data_specifier_descriptor");
-//         case 0x62: return std::string("frequency_list_descriptor");
-//         case 0x6C: return std::string("cell_list_descriptor");
-//         case 0x6D: return std::string("cell_frequency_link_descriptor");
-//         case 0x73: return std::string("default_authority_descriptor");
-//         case 0x77: return std::string("time_slice_fec_identifier_descriptor");
-//         case 0x79: return std::string("S2_satellite_delivery_system_descriptor");
-//         case 0x7D: return std::string("XAIT_location_descriptor");
-//         case 0x7E: return std::string("FTA_content_management_descriptor");
-//         case 0x7F: return std::string("extension_descriptor");
-//         default: return std::string("unknown descriptor");
-//     }
-// }
-
 void NetworkInformationSection::TSLoopEntry::print(std::size_t indent_level) const {
     utils::printLine("TS loop entry", indent_level, '-');
     utils::printDataPoint("tsid", this->tsid, indent_level);
@@ -116,7 +89,7 @@ void NetworkInformationSection::TSLoopEntry::print(std::size_t indent_level) con
 void NetworkInformationSection::print(std::size_t indent_level) const {
     utils::printLine("Network information table", indent_level, '=');
     this->header.print(indent_level + 1);
-    if (this->long_header.has_value()) this->long_header.value().print(indent_level + 1);
+    if (this->long_header.has_value()) this->long_header.value().print(indent_level + 1, "Network ID");
     utils::printDataPoint("Network descriptors length", this->network_descriptors_length, indent_level);
     for (std::size_t i = 0; i < this->network_descriptors.size(); i++) this->network_descriptors[i].get()->print(indent_level + 1);
     utils::printDataPoint("Transport stream loop length", this->transport_stream_loop_length, indent_level);

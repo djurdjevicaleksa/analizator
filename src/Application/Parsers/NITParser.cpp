@@ -4,18 +4,12 @@
 #include "PSIPacketAssembler.h"
 #include "NITParser.h"
 
-std::vector<NetworkInformationSection> NIT::parse(std::vector<TSPacket>& ts_packets) {
+void NIT::parse(const std::unordered_map<std::uint16_t, std::vector<TSPacket*>>& grouped_ts_packets, std::vector<NetworkInformationSection>& out) {
 
-    PSIPacketAssembler assembler;
-    std::vector<std::vector<uint8_t>> completed_sections = assembler.process(ts_packets);
+    std::vector<std::vector<std::uint8_t>> completed_sections;
+    PSI::process(grouped_ts_packets.at(NIT::PID), completed_sections);
 
-    std::vector<NetworkInformationSection> nit_tables;
-
-    for (size_t i = 0; i < completed_sections.size(); i++) {
-
-        std::vector<uint8_t>& byte_array = completed_sections[i];
-        nit_tables.emplace_back(&byte_array[0]);
+    for (std::size_t i = 0; i < completed_sections.size(); i++) {
+        out.emplace_back(&completed_sections[i][0]);
     }
-    
-    return nit_tables;
 }

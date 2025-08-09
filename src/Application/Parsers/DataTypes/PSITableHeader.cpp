@@ -1,4 +1,6 @@
 #include <cstdint>
+#include <cstddef>
+#include <string>
 
 #include "PSITableHeader.h"
 #include "src/Application/Utilities/Utils.h"
@@ -25,9 +27,9 @@ void PSITableHeader::print(std::size_t indent_level) const {
     utils::printLine("Header", indent_level, '-');
 }
 
-void PSITableLongHeader::print(std::size_t indent_level) const {
+void PSITableLongHeader::print(std::size_t indent_level, const std::string& table_id_extension_name) const {
     utils::printLine("Extended header", indent_level, '-');
-    utils::printDataPoint("Table ID extension", this->table_id_extension, indent_level);
+    utils::printDataPoint(table_id_extension_name, this->table_id_extension, indent_level);
     utils::printDataPoint("Version number", this->version_number, indent_level);
     utils::printDataPoint("Current next indicator", this->current_next_indicator, indent_level);
     utils::printDataPoint("Section number", this->section_number, indent_level);

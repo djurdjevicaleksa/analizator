@@ -1,113 +1,119 @@
+#include <vector>
+#include <cstdint>
+#include <cstddef>
+#include <cassert>
+#include <iostream>
+#include <algorithm>
+
 #include "PSIPacketAssembler.h"
 
-void PSIPacketAssembler::reset() {
-    buffer.clear();
-    expected_section_length = 0;
-    collecting = false;
-    last_cc = -1;
-}
+void PSI::process(const std::vector<TSPacket*>& grouped_psi_packets, std::vector<std::vector<std::uint8_t>>& out_completed_sections) {
 
-std::vector<std::vector<uint8_t>> PSIPacketAssembler::process(const std::vector<TSPacket>& packets) {
-    std::vector<std::vector<uint8_t>> completed_sections;
+    std::vector<std::uint8_t> buffer;
+    std::size_t expected_section_length = 0;
+    bool collecting = false;
+    std::int8_t last_cc = -1;
 
-    for (size_t i = 0; i < packets.size(); i++) {
-        const TSPacket& current_packet = packets[i];
+    auto reset = [&]() {
+        buffer.clear();
+        expected_section_length = 0;
+        collecting = false;
+        last_cc = -1;
+    };
 
-        // if (current_packet.header.bf.sync_byte != 0x47) continue;
-        if (current_packet.header.bf.transport_error_indicator) continue;
+    for (std::size_t i = 0; i < grouped_psi_packets.size(); i++) {
 
-        const uint8_t* payload = current_packet.payload;
-        const uint8_t* payload_end = payload + current_packet.payload_length;
-        // if (!payload) continue;
+        TSPacket& current_packet = *grouped_psi_packets[i];
 
-        int8_t continuity_counter = current_packet.header.bf.continuity_counter;
-        bool discontinuity = (this->last_cc != -1 && ((this->last_cc + 1) & 0b1111) != continuity_counter);
-        this->last_cc = continuity_counter;
+        // Check continuity validity
+        std::int8_t continuity_counter = current_packet.header.continuity_counter;
+        bool discontinuity = (last_cc != -1) && (((last_cc + 1) & 0b1111) != continuity_counter) && current_packet.payload.has_value();
+        if (current_packet.payload.has_value()) last_cc = continuity_counter;
+        if (discontinuity) { reset(); continue; }
 
-        if (discontinuity) {
-            this->reset();
-            continue;
-        }
+        if (!current_packet.payload.has_value()) continue;
+        
+        const std::uint8_t* payload_start = &current_packet.payload.value()[0];
+        const std::uint8_t* payload_end = payload_start + current_packet.payload.value().size();
+        
 
-        if (current_packet.header.bf.payload_unit_start_indicator) {
-            this->buffer.clear();
-
-            if (static_cast<size_t>(payload[0] + 1) > current_packet.payload_length) {
-                this->reset();
-                continue;
-            }
-
-            const uint8_t* section_start = payload + payload[0] + 1; // Account for pointer_field 
-
-            size_t bytes_left_in_payload = current_packet.payload_length - (section_start - payload);
+        if (current_packet.header.payload_unit_start_indicator) {
             
-            if(bytes_left_in_payload < 3) {
-                this->reset();
+            const std::uint8_t* new_section_start = payload_start + *payload_start + 1;
+            if (new_section_start >= payload_end) { reset(); continue; }
+            
+            // Complete the previous section, if it exists
+            if (collecting) {
+                buffer.insert(buffer.end(), payload_start + 1, new_section_start);
+                out_completed_sections.push_back(buffer);
+                // assert(buffer.size() == expected_section_length && "Expected section length does not equal the size of the buffer.");
+                reset();
+            }           
+            
+            last_cc = continuity_counter;
+            buffer.clear();
+
+            std::size_t bytes_left_in_payload = current_packet.payload.value().size() - (new_section_start - payload_start);
+            if (bytes_left_in_payload < 3) {
+                std::cerr << "Failed to assemble a PSI section: Section sliced at a wrong place." << std::endl;
+                reset();
                 continue;
             }
+            
+            std::uint16_t section_length_with_crc = ((new_section_start[1] & 0b1111) << 8) | new_section_start[2];
+            expected_section_length = 3 + section_length_with_crc;
 
-            uint16_t section_length_with_crc = ((section_start[1] & 0b1111) << 8) | section_start[2];
-            this->expected_section_length = 3 + section_length_with_crc;
+            const std::size_t bytes_to_copy = std::min(expected_section_length, bytes_left_in_payload);
+            buffer.insert(buffer.end(), new_section_start, new_section_start + bytes_to_copy);
+            collecting = true;
 
-            const size_t bytes_to_copy = this->expected_section_length <= bytes_left_in_payload ? 
-                this->expected_section_length : bytes_left_in_payload; 
+            if (buffer.size() >= expected_section_length) {
+                out_completed_sections.push_back(std::move(buffer));
+                reset();
 
-            this->buffer.insert(
-                buffer.end(),
-                section_start,
-                section_start + bytes_to_copy
-            );
-
-            this->collecting = true;
-
-            if (this->buffer.size() >= expected_section_length) {
-                completed_sections.push_back(std::move(buffer));
-                this->reset();
-
-                // There could still be another section here, after the first one
-                uint8_t* next_section = const_cast<uint8_t*>(section_start) + bytes_to_copy;
+                // There could still be more sections after the first one
+                std::uint8_t* next_section_start = const_cast<std::uint8_t*>(new_section_start) + bytes_to_copy;
                 while (true) {
-                    if (next_section + 3 > payload_end) break;   // There is no space left for a new section
-                    if (*next_section == 0xFF) break;           // Padding; there is nothing else here
+                    if (next_section_start + 3 > payload_end) break;    // No space for a new section
+                    if (*next_section_start == 0xFF) break;             // Stuffing bytes; there is nothing else here
+                    
+                    last_cc = continuity_counter;
 
-                    // There is a valid section after the previous one
+                    // A valid section exists after the previous one
                     std::cout << "There are multiple valid sections in this packet." << std::endl;
-                    uint16_t next_section_length_with_crc = ((next_section[1] & 0b1111) << 8) | next_section[2];
-                    uint16_t total_next_section_length = 3 + next_section_length_with_crc;
+                    std::uint16_t next_section_length_with_crc = ((next_section_start[1] & 0b11) << 8) | next_section_start[2];
+                    std::uint16_t total_next_section_length = 3 + next_section_length_with_crc;
 
-                    // The next one is in its entirety
-                    if (next_section + total_next_section_length < payload_end) {
-                        completed_sections.emplace_back(
-                            next_section,
-                            next_section + total_next_section_length
+
+                    // If the next section is entirely inside the rest of the payload...
+                    if (next_section_start + total_next_section_length < payload_end) {
+                        out_completed_sections.emplace_back(
+                            next_section_start,
+                            next_section_start + total_next_section_length
                         );
 
-                        next_section += total_next_section_length;
+                        next_section_start += total_next_section_length;
                     }
-                    else { // The next one is fragmented
-                        this->buffer.insert(this->buffer.end(), next_section, const_cast<uint8_t*>(payload_end));
-                        this->expected_section_length = total_next_section_length;
-                        this->collecting = true;
+                    else {
+                        buffer.insert(buffer.end(), next_section_start, const_cast<std::uint8_t*>(payload_end));
+                        expected_section_length = total_next_section_length;
+                        collecting = true;
                         break;
-                    }
+                    }              
                 }
             }
         }
         else if (collecting) {
-            const uint8_t* section_start = payload;
-            size_t bytes_left_in_payload = current_packet.payload_length - (section_start - payload);
+            const std::uint8_t* continued_section = payload_start;
+            std::size_t bytes_left_in_payload = current_packet.payload.value().size();
+            
+            const std::size_t bytes_to_copy = std::min(expected_section_length - buffer.size(), bytes_left_in_payload);
+            buffer.insert(buffer.end(), continued_section, continued_section + bytes_to_copy);
 
-            const size_t bytes_to_copy = (this->expected_section_length - this->buffer.size()) <= bytes_left_in_payload ?
-                this->expected_section_length - this->buffer.size() : bytes_left_in_payload;
-
-            this->buffer.insert(buffer.end(), section_start, section_start + bytes_to_copy);
-
-            if (this->buffer.size() >= this->expected_section_length) {
-                completed_sections.push_back(std::move(this->buffer));
-                this->reset();
+            if (buffer.size() >= expected_section_length) {
+                out_completed_sections.push_back(std::move(buffer));
+                reset();
             }
         }
     }
-
-    return completed_sections;
 }

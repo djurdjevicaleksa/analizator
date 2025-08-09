@@ -14,16 +14,17 @@
 class Analizator {
 public:
     std::vector<TSPacket> ts_packets;
-    std::unordered_map<uint16_t, std::vector<TSPacket>> grouped_ts_packets;
+    std::unordered_map<std::uint16_t, std::vector<TSPacket*>> ts_by_pid;
     std::vector<NetworkInformationSection> nit_tables;
     std::vector<ServiceDescriptionSection> sdt_tables;
+
+    
     std::vector<ProgramInfo> program_infos;
     std::unordered_map<uint16_t, std::string> custom_pid_names;
 
 private:
-    void getNITs();
-    void getSDTs();
-    void getProgramInfos();
+    // void getProgramInfos();
+    void groupPacketsByPID();
     TsPaketParser pat_pmt_parser; 
 
 public:
@@ -39,12 +40,11 @@ public:
     ~Analizator() = default;
 
     inline void printTSPacket(size_t index) const {
-        if (index < this->ts_packets.size()) (this->ts_packets)[index].print();
+        if (index < this->ts_packets.size()) (this->ts_packets)[index].print(static_cast<std::size_t>(1));
     }
 
     inline void printGroupedPackets() const {
-        TSParser parser;
-        parser.printGroupedPackets(this->grouped_ts_packets, this->custom_pid_names);
+        TS::printPacketGroups(this->ts_by_pid, this->custom_pid_names);
     }
 
     inline void printPAT() const {
@@ -60,10 +60,8 @@ public:
     };
 
     inline void printSDT(size_t index) const {
-        if (index < this->sdt_tables.size()) this->sdt_tables[index].print();
+        if (index < this->sdt_tables.size()) this->sdt_tables[index].print(1);
     };
-
-    void trackPMTChanges();
 };
 
 #endif // _ANALIZATOR_H
