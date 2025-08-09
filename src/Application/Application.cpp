@@ -116,9 +116,16 @@ void Application::listNIT() {
     }
         
     QListWidget* listWidget = new QListWidget();
-    for (size_t i = 0; i < this->analizator.nit_tables.size(); ++i)
-        listWidget->addItem("NIT tabela #" + QString::number(i + 1));
+    for (size_t i = 0; i < this->analizator.nit_tables.size(); ++i) {
+        std::string nit_display_name = "NIT Table [" + std::to_string(i) + "]  (Version: ";
 
+        nit_display_name += this->analizator.nit_tables[i].long_header.has_value()?
+            std::to_string(this->analizator.nit_tables[i].long_header.value().version_number) : "unknown";
+        nit_display_name += ")";
+
+        listWidget->addItem(QString::fromStdString(nit_display_name));
+    }
+        
     listWidget->setStyleSheet(
         "QListWidget {"
         "  background-color: #f9f9fb;"
@@ -165,8 +172,15 @@ void Application::listSDT() {
     }
 
     QListWidget* listWidget = new QListWidget();
-    for (size_t i = 0; i < this->analizator.sdt_tables.size(); ++i)
-        listWidget->addItem("SDT tabela #" + QString::number(i + 1));
+    for (size_t i = 0; i < this->analizator.sdt_tables.size(); ++i) {
+        std::string sdt_display_name = "SDT Table [" + std::to_string(i) + "]  (Version: ";
+
+        sdt_display_name += this->analizator.sdt_tables[i].long_header.has_value()?
+            std::to_string(this->analizator.sdt_tables[i].long_header.value().version_number) : "unknown";
+        sdt_display_name += ")";
+
+        listWidget->addItem(QString::fromStdString(sdt_display_name));
+    }
 
     listWidget->setStyleSheet(
         "QListWidget {"

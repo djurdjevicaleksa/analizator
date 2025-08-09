@@ -131,7 +131,7 @@ struct TSPacket {
 
 public:
 
-    void print(const std::size_t indent_level) const;
+    void print() const;
     inline std::uint8_t getAdaptationFieldControl() const {
         return this->header.adaptation_field_control;
     }

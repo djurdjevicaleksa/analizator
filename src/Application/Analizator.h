@@ -40,7 +40,7 @@ public:
     ~Analizator() = default;
 
     inline void printTSPacket(size_t index) const {
-        if (index < this->ts_packets.size()) (this->ts_packets)[index].print(static_cast<std::size_t>(1));
+        if (index < this->ts_packets.size()) (this->ts_packets)[index].print();
     }
 
     inline void printGroupedPackets() const {

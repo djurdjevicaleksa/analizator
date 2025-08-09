@@ -203,7 +203,7 @@ std::string to_binary_low(T input, std::uint8_t BITS) {
     return out;
 }
 
-void TSPacket::print(std::size_t indent_level) const {
+void TSPacket::print() const {
         
     std::cout << "\033[34m";        
     std::cout << "========== HEADER ========== " << std::endl;
@@ -243,7 +243,7 @@ void TSPacket::print(std::size_t indent_level) const {
 
     std::cout << "\033[32m";
     if (this->adaptation_field.has_value()) {
-        for (std::size_t i = 0; i < this->adaptation_field.value().adaptation_field_length + 1; i++) {
+        for (std::size_t i = 0; i < static_cast<std::size_t>(this->adaptation_field.value().adaptation_field_length + 1); i++) {
             std::cout << std::uppercase << std::hex << std::setw(2) << std::setfill('0')
                       << static_cast<int>(adaptation_field.value().bit_representation[i]);
 
